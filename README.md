@@ -1,6 +1,6 @@
 # FAEMS — Faculty Achievement & Accreditation Evidence Management System
 
-Built for Thakur College of Engineering per `FAAEMS_BUILD_PLAYBOOK.md`. Django + DRF backend, React + Vite + Tailwind frontend, PostgreSQL, MinIO, all in Docker Compose.
+Built for Thakur College of Engineering using Django + DRF backend, React + Vite + Tailwind frontend, PostgreSQL, MinIO, all in Docker Compose.
 
 ## Quick start
 
@@ -11,18 +11,7 @@ docker compose exec backend python manage.py migrate
 docker compose exec backend python manage.py seed_demo
 ```
 
-Open **http://localhost:5173**. Backend API is on **http://localhost:8010** (8000 was already in use by another local project).
-
-### Demo logins (password `Faems@2026!` for all)
-
-| Email | Role | MFA |
-|---|---|---|
-| `guest.faculty@tcetmumbai.in` | Faculty | none — instant login |
-| `shiwani.gupta@tcetmumbai.in` | HOD, AI & ML | required (real TOTP, scan QR on first login) |
-| `guest.iqac@tcetmumbai.in` | IQAC Admin | required |
-| `guest.admin@tcetmumbai.in` | Super Admin | required |
-
-Also seeded under AI & ML: Pranjali Sankhe, Ankita Amravat, Shruti Pant, Kunal Pandey, Abhijit Jadhav (all faculty).
+Open **http://localhost:5173**. Backend API is on **http://localhost:8010** (8000 was already in use by another local project)..
 
 Login is restricted to `@tcetmumbai.in` addresses, enforced server-side.
 
@@ -80,8 +69,4 @@ docker compose exec backend python manage.py generate_notifications
 docker compose exec backend python manage.py verify_evidence_integrity
 ```
 
-## Known gaps
 
-- Self-service password reset is intentionally not implemented (product decision) — the login page's "Forgot password" shows a message directing users to IQAC/admin.
-- No TLS termination configured (no real domain/cert available in this environment).
-- Full-page-per-role dashboards exist for Overview, Achievements, Review Queue, Faculty, Alumni, Reports, Departments — a few smaller admin surfaces (e.g. editing the criteria hierarchy itself) are only reachable via Django admin for now, not a dedicated frontend page.
