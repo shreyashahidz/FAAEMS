@@ -1,0 +1,70 @@
+# Environment & Secrets (NEVER COMMIT)
+.env
+.env.*
+.env.example
+*.env
+*.env.*
+*.env.example
+qa_access.txt
+*.token
+*.jwt
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.enc
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+
+# Django
+backend/staticfiles/
+staticfiles/
+**/staticfiles/
+backend/media/
+media/
+**/media/
+db.sqlite3
+db.sqlite3-journal
+*.log
+logs/
+**/logs/
+
+# Node & Build artifacts
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.vite/
+**/.vite/
+
+# Editors, OS & AI Tooling
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.claude/
+**/.claude/
+
+# Docker volumes data (if bind-mounted locally)
+pgdata/
+miniodata/
+
+# Backups — encrypted, but still shouldn't live in git
+backups/
+**/backups/
+
+# Scratch & test artifacts
+.tmp/
+**/.tmp/
+

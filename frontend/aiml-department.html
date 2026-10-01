@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI &amp; ML Department — Vision, Mission &amp; Outcomes | TCET Faculty Contribution</title>
+<meta name="description" content="Vision, Mission, Program Educational Objectives, Program Outcomes and Program Specific Outcomes of the Artificial Intelligence &amp; Machine Learning department, Thakur College of Engineering &amp; Technology.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --tcet-blue: #0241cd;
+    --tcet-blue-dark: #032e94;
+    --tcet-blue-light: #eaf0ff;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --border-light: #e2e8f0;
+    --bg-surface-alt: #f8fafc;
+    --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: #ffffff;
+    line-height: 1.6;
+  }
+  a { color: inherit; }
+
+  .page-topbar {
+    background: var(--tcet-blue);
+    color: #ffffff;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .page-topbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.05rem;
+    text-decoration: none;
+  }
+  .page-topbar .brand img { width: 32px; height: 32px; border-radius: 6px; background: #fff; }
+  .page-topbar .back-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: rgba(255,255,255,0.15);
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+  }
+  .page-topbar .back-link:hover { background: rgba(255,255,255,0.25); }
+
+  .page-hero {
+    background: linear-gradient(135deg, var(--tcet-blue) 0%, var(--tcet-blue-dark) 100%);
+    color: #ffffff;
+    padding: 3.5rem 1.5rem 3rem;
+    text-align: center;
+  }
+  .page-hero .tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.15);
+    padding: 0.35rem 1rem;
+    border-radius: 9999px;
+    margin-bottom: 1rem;
+  }
+  .page-hero h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+  }
+  .page-hero p {
+    font-size: 1rem;
+    opacity: 0.9;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .page-container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1rem;
+    margin: -4.5rem auto 3rem;
+    max-width: 920px;
+    padding: 0 1.5rem;
+  }
+  .stat-card {
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    padding: 1.1rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(2, 65, 205, 0.08);
+  }
+  .stat-card .num {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--tcet-blue);
+    display: block;
+  }
+  .stat-card .label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  section.block { margin-bottom: 3rem; }
+  .block h2 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--tcet-blue-light);
+  }
+  .block p { color: var(--text-muted); font-size: 0.95rem; }
+
+  .outcome-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.9rem; }
+  .outcome-item {
+    display: flex;
+    gap: 0.9rem;
+    background: var(--bg-surface-alt);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+  }
+  .outcome-badge {
+    flex: 0 0 auto;
+    background: var(--tcet-blue);
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.78rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+    height: fit-content;
+    white-space: nowrap;
+  }
+  .outcome-text { font-size: 0.9rem; color: var(--text-primary); }
+  .outcome-text strong { color: var(--tcet-blue-dark); }
+
+  .batch-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .source-note {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-light);
+    padding-top: 1.5rem;
+  }
+  .source-note a { color: var(--tcet-blue); font-weight: 700; text-decoration: none; }
+  .source-note a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+  <div class="page-topbar">
+    <a href="index.html" class="brand">
+      <img src="assets/aiml_logo.jpg?v=1.0" alt="AI &amp; ML logo">
+      TCET Faculty Contribution
+    </a>
+    <a href="index.html" class="back-link">&larr; Back to Portal</a>
+  </div>
+
+  <div class="page-hero">
+    <span class="tag">Department Profile</span>
+    <h1>Artificial Intelligence &amp; Machine Learning</h1>
+    <p>Thakur College of Engineering &amp; Technology, Mumbai — B.Tech (AI&amp;ML), NBA Tier-I accreditation track.</p>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat-card"><span class="num">2020-21</span><span class="label">Established</span></div>
+    <div class="stat-card"><span class="num">23</span><span class="label">Faculty Strength</span></div>
+    <div class="stat-card"><span class="num">3 + 8</span><span class="label">Ph.D. / Pursuing</span></div>
+    <div class="stat-card"><span class="num">4</span><span class="label">Dedicated Labs</span></div>
+    <div class="stat-card"><span class="num">ACM SIGAI</span><span class="label">Student Chapter</span></div>
+  </div>
+
+  <div class="page-container">
+
+    <section class="block">
+      <h2>Vision</h2>
+      <p>To become a department of international relevance in the field of Artificial Intelligence and Machine Learning.</p>
+    </section>
+
+    <section class="block">
+      <h2>Mission</h2>
+      <ul class="outcome-list">
+        <li class="outcome-item"><span class="outcome-text">Provide quality education in AI &amp; ML supported by state-of-the-art infrastructure, modern tools and agile methodologies.</span></li>
+        <li class="outcome-item"><span class="outcome-text">Nurture strong technical knowledge and research aptitude through holistic and multidisciplinary education, empowering students to solve real-world problems and develop sustainable AI-driven solutions.</span></li>
+        <li class="outcome-item"><span class="outcome-text">Enhance local and global employability by aligning the curriculum with industry requirements and fostering collaboration with industry, academia, and research organizations.</span></li>
+        <li class="outcome-item"><span class="outcome-text">Inculcate leadership qualities, ethical values, communication skills, lifelong learning, and social sensitivity to develop responsible and globally competent professionals.</span></li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>Program Educational Objectives (PEO)</h2>
+      <p class="batch-note">Batch 2022-26, 2023-27 onwards — HME 2023</p>
+      <ul class="outcome-list">
+        <li class="outcome-item"><span class="outcome-badge">PEO 1</span><span class="outcome-text"><strong>Knowledge:</strong> Build a strong foundation in computing, artificial intelligence, and research methodologies to adapt to emerging technologies.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PEO 2</span><span class="outcome-text"><strong>Skills:</strong> Develop innovative and intelligent solutions for real-world and societal challenges through continuous skill enhancement.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PEO 3</span><span class="outcome-text"><strong>Abilities:</strong> Demonstrate leadership, effective communication, ethical values, and a commitment to lifelong learning as globally competent professionals.</span></li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>Program Outcomes (PO)</h2>
+      <p class="batch-note">Batch 2023-27, 2024-28 onwards</p>
+      <ul class="outcome-list">
+        <li class="outcome-item"><span class="outcome-badge">PO 1</span><span class="outcome-text"><strong>Engineering Knowledge:</strong> Apply knowledge of mathematics, science, engineering fundamentals and an engineering specialization to the solution of complex engineering problems.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 2</span><span class="outcome-text"><strong>Problem Analysis:</strong> Identify, formulate, research literature, and analyze complex engineering problems reaching substantiated conclusions using first principles of mathematics, natural sciences, and engineering sciences.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 3</span><span class="outcome-text"><strong>Design / Development of Solutions:</strong> Design solutions for complex engineering problems and design system components or processes that meet specified needs with appropriate consideration for public health, safety, and cultural, societal and environmental factors.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 4</span><span class="outcome-text"><strong>Investigations of Complex Problems:</strong> Use research-based knowledge and research methods including design of experiments, analysis and interpretation of data, and synthesis of information to provide valid conclusions.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 5</span><span class="outcome-text"><strong>Engineering Tool Usage:</strong> Create, select, and apply appropriate techniques, resources and modern engineering and IT tools, including prediction and modelling, with an understanding of their limitations.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 6</span><span class="outcome-text"><strong>The Engineer and the World:</strong> Apply reasoning informed by contextual knowledge to assess societal, health, safety, legal and cultural issues and the consequent responsibilities relevant to professional engineering practice.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 7</span><span class="outcome-text"><strong>Ethics:</strong> Apply ethical principles and commit to professional ethics, responsibilities and norms of engineering practice.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 8</span><span class="outcome-text"><strong>Individual &amp; Collaborative Team Work:</strong> Function effectively as an individual, and as a member or leader in diverse teams and in multi-disciplinary settings.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 9</span><span class="outcome-text"><strong>Communication:</strong> Communicate effectively on complex engineering activities, comprehend and write effective reports and design documentation, and make effective presentations.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 10</span><span class="outcome-text"><strong>Project Management &amp; Finance:</strong> Demonstrate knowledge of engineering and management principles and apply these as a member and leader in a team to manage projects in multidisciplinary environments.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PO 11</span><span class="outcome-text"><strong>Life-Long Learning:</strong> Recognize the need for, and have the preparation and ability to engage in, independent and life-long learning in the broadest context of technological change.</span></li>
+      </ul>
+    </section>
+
+    <section class="block">
+      <h2>Program Specific Outcomes (PSO)</h2>
+      <p class="batch-note">Batch 2022-26, 2023-27 onwards — HME 2023</p>
+      <ul class="outcome-list">
+        <li class="outcome-item"><span class="outcome-badge">PSO 1</span><span class="outcome-text"><strong>Technical Competency:</strong> Demonstrate proficiency in mathematics, computing, artificial intelligence, machine learning, and data science by utilizing modern engineering tools and techniques.</span></li>
+        <li class="outcome-item"><span class="outcome-badge">PSO 2</span><span class="outcome-text"><strong>Problem Solving:</strong> Analyze engineering problems and apply AI and ML techniques to develop innovative and sustainable solutions for industrial and societal applications.</span></li>
+      </ul>
+    </section>
+
+    <p class="source-note">
+      Source: <a href="https://www.tcetmumbai.in/AIML/OBE.html" target="_blank" rel="noopener">tcetmumbai.in/AIML — Outcome Based Education</a>
+      &nbsp;·&nbsp;
+      <a href="https://www.tcetmumbai.in/AIML/" target="_blank" rel="noopener">tcetmumbai.in/AIML</a>
+    </p>
+
+  </div>
+
+</body>
+</html>
