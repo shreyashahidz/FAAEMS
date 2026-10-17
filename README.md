@@ -1,4 +1,4 @@
-# FAEMS — Faculty Achievement & Accreditation Evidence Management System
+Faculty Contribution
 
 Built for Thakur College of Engineering using Django + DRF backend, React + Vite + Tailwind frontend, PostgreSQL, MinIO, all in Docker Compose.
 
