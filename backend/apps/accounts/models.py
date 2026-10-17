@@ -98,7 +98,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         IQAC_ADMIN = "iqac_admin", "IQAC Admin"
         SUPER_ADMIN = "super_admin", "Super Admin"
 
-    MFA_REQUIRED_ROLES = {Role.IQAC_ADMIN, Role.SUPER_ADMIN}
+    # OTP / TOTP verification at login was removed (LAN deployment): no role requires it.
+    MFA_REQUIRED_ROLES = set()
 
     email = models.EmailField(unique=True, validators=[validate_institution_email])
     full_name = models.CharField(max_length=150)

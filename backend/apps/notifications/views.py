@@ -4,7 +4,6 @@ from rest_framework.response import Response
 
 from apps.notifications.models import Notification
 from apps.notifications.serializers import NotificationSerializer
-from apps.notifications.services import remind_pending_verifications
 
 
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
@@ -16,13 +15,6 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ["is_read"]
 
     def get_queryset(self):
-        # There's no task scheduler in this deployment (single-server, no
-        # Celery beat/cron), so the daily "still awaiting your
-        # verification" reminder is piggybacked on ordinary traffic here
-        # instead: cheap no-op query unless 20h+ have actually passed (see
-        # remind_pending_verifications), so it's safe to call on every
-        # notifications fetch rather than needing its own schedule.
-        remind_pending_verifications()
         return Notification.objects.filter(recipient=self.request.user)
 
     @action(detail=False, methods=["get"])

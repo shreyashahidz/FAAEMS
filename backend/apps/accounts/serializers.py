@@ -2,12 +2,18 @@ import datetime
 import re
 
 from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import serializers
 
-from apps.accounts.models import Department, FacultyProfile, FacultyRegistrationRequest, User
-from apps.accounts.validators import role_for_designation, validate_hod_slot_available, validate_institution_email
+from apps.accounts.models import Department, FacultyProfile, User
+from apps.accounts.validators import (
+    role_for_designation,
+    user_email_exists,
+    validate_hod_slot_available,
+    validate_institution_email,
+)
 
 MINIMUM_REGISTRATION_AGE_YEARS = 18
 MINIMUM_BIRTH_YEAR = 1965
@@ -131,7 +137,7 @@ class FacultyCreateSerializer(serializers.Serializer):
 
     def validate_email(self, value):
         validate_institution_email(value)
-        if User.objects.filter(email__iexact=value).exists():
+        if user_email_exists(value):
             raise serializers.ValidationError("A user with this email already exists.")
         return value
 
@@ -206,7 +212,7 @@ class TransferHODSerializer(serializers.Serializer):
 
     def validate_email(self, value):
         validate_institution_email(value)
-        if User.objects.filter(email__iexact=value).exists():
+        if user_email_exists(value):
             raise serializers.ValidationError("An account with this email already exists.")
         return value
 
@@ -281,7 +287,7 @@ class RegisterSerializer(serializers.Serializer):
 
     def validate_email(self, value):
         validate_institution_email(value)
-        if User.objects.filter(email__iexact=value).exists():
+        if user_email_exists(value):
             raise serializers.ValidationError("An account with this email already exists. Please log in instead.")
         return value
 
@@ -334,8 +340,14 @@ class RegisterSerializer(serializers.Serializer):
         # The college is onboarding AI & ML first — every self-registration
         # goes into that department. Once other departments start
         # onboarding, this can become a real field again.
-        department = Department.objects.get(code="AIML")
+        # Lock the department row so two simultaneous HOD registrations can't
+        # both pass the slot check.
+        department = Department.objects.select_for_update().get(code="AIML")
         designation = validated_data.get("designation") or FacultyProfile.Designation.ASSISTANT_PROFESSOR
+        try:
+            validate_hod_slot_available(designation, department)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError({"designation": exc.messages}) from exc
         user = User.objects.create_user(
             email=validated_data["email"],
             password=password,
@@ -355,26 +367,3 @@ class RegisterSerializer(serializers.Serializer):
             date_of_birth=validated_data.get("date_of_birth"),
         )
         return profile
-
-
-class FacultyRegistrationRequestSerializer(serializers.ModelSerializer):
-    """The HOD's "Approve Faculty" page — surfaces exactly what she needs
-    to decide, read out of the stored registration payload rather than the
-    whole raw JSON blob (which also still has the password hash in it)."""
-
-    full_name = serializers.SerializerMethodField()
-    designation = serializers.SerializerMethodField()
-    employee_id = serializers.SerializerMethodField()
-
-    class Meta:
-        model = FacultyRegistrationRequest
-        fields = ["id", "email", "full_name", "designation", "employee_id", "department", "created_at"]
-
-    def get_full_name(self, obj):
-        return obj.payload.get("full_name", "")
-
-    def get_designation(self, obj):
-        return obj.payload.get("designation", "")
-
-    def get_employee_id(self, obj):
-        return obj.payload.get("employee_id", "")

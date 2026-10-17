@@ -47,7 +47,7 @@ class Cycle(TimeStampedModel):
         unique_together = [("framework", "label")]
 
     def __str__(self):
-        return f"{self.framework.code} — {self.label}"
+        return f"{self.framework.code}: {self.label}"
 
 
 class FacultyCycleSubscription(TimeStampedModel):
@@ -80,7 +80,7 @@ class Criterion(TimeStampedModel):
         unique_together = [("framework", "code")]
 
     def __str__(self):
-        return f"{self.code} — {self.title}"
+        return f"{self.code}: {self.title}"
 
 
 class SubCriterion(TimeStampedModel):
@@ -109,7 +109,7 @@ class SubCriterion(TimeStampedModel):
         unique_together = [("criterion", "code")]
 
     def __str__(self):
-        return f"{self.code} — {self.description[:60]}"
+        return f"{self.code}: {self.description[:60]}"
 
 
 class RequiredEvidenceTarget(TimeStampedModel):

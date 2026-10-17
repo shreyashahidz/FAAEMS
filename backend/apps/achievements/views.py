@@ -17,12 +17,9 @@ from apps.achievements.serializers import AchievementSerializer, EvidenceDocumen
 from apps.audit.models import AuditLog
 from apps.notifications.services import (
     notify_achievement_removed,
-    notify_achievement_verified,
-    notify_corrections_requested,
     notify_evidence_added,
     notify_evidence_removed,
     notify_missing_evidence,
-    notify_pending_verification,
 )
 
 
@@ -106,7 +103,7 @@ class AchievementViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Only the submitting faculty member can delete this record.")
         if instance.status == Achievement.Status.IQAC_LOCKED:
             raise ValidationError(
-                {"detail": "This record has been locked in by IQAC as the institutional record — ask IQAC to unlock it first."}
+                {"detail": "This record has been locked in by IQAC as the institutional record. Ask IQAC to unlock it first."}
             )
         instance.soft_delete(by_user=request.user, reason="Removed by faculty.")
         notify_achievement_removed(instance)
@@ -154,111 +151,26 @@ class AchievementViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def submit(self, request, pk=None):
-        """Draft → Submitted — except an HOD submitting their own
-        achievement, which goes straight to Verified: there's no one else
-        in-department to review it, and routing it to IQAC instead (the old
-        behavior) added a review step the HOD role is specifically meant to
-        skip. Checked fresh against request.user's CURRENT role every time,
-        never cached, so a former HOD who has since dropped to another
-        designation (role_for_designation) goes through normal review again
-        on their very next submission.
+        """Draft → Verified. There is no HOD verification step: a submission
+        is accepted as soon as the faculty member submits it, and the HOD (or
+        IQAC) can only view and download the attachments. "Verified" is kept
+        as the stored status so the leaderboard, reports and the rest of the
+        pipeline keep counting accepted records without any change.
         """
         achievement = self.get_object()
         if achievement.status not in {Achievement.Status.DRAFT, Achievement.Status.CORRECTIONS_REQUIRED}:
             raise ValidationError({"detail": f"Cannot submit from status '{achievement.status}'."})
-        is_own_hod_submission = request.user.role == User.Role.HOD and achievement.faculty.user_id == request.user.id
         with transaction.atomic():
             old = achievement.status
             achievement.submitted_at = timezone.now()
-            if is_own_hod_submission:
-                achievement.status = Achievement.Status.VERIFIED
-                achievement.verified_at = timezone.now()
-                achievement.verified_by = request.user
-                achievement.save(update_fields=["status", "submitted_at", "verified_at", "verified_by"])
-                achievement.documents.update(verification_status=EvidenceDocument.VerificationStatus.VERIFIED)
-            else:
-                achievement.status = (
-                    Achievement.Status.RESUBMITTED if old == Achievement.Status.CORRECTIONS_REQUIRED else Achievement.Status.SUBMITTED
-                )
-                achievement.save(update_fields=["status", "submitted_at"])
-            _write_audit(request.user, "submit", achievement, old, achievement.status)
-        if is_own_hod_submission:
-            notify_achievement_verified(achievement)
-        else:
-            notify_pending_verification(achievement)
-            if not achievement.documents.exists():
-                notify_missing_evidence(achievement)
-        return Response(AchievementSerializer(achievement, context={"request": request}).data)
-
-    def _require_reviewer(self, request, achievement):
-        user = request.user
-        # An HOD's own submissions auto-verify on submit() now and normally
-        # never reach a reviewable status at all — this guard is defensive,
-        # covering records submitted before that behavior existed (or one
-        # otherwise stuck at SUBMITTED/RESUBMITTED while owned by an HOD),
-        # since an HOD still can't be the one to review their own record.
-        own_profile = getattr(user, "faculty_profile", None)
-        is_self = own_profile is not None and own_profile.id == achievement.faculty_id
-        if user.role == User.Role.HOD:
-            if is_self:
-                raise PermissionDenied("HODs cannot review their own submissions.")
-            if user.department_id != achievement.faculty.department_id:
-                raise PermissionDenied("You can only review achievements within your own department.")
-            return
-        if user.role in {User.Role.IQAC_ADMIN, User.Role.SUPER_ADMIN}:
-            return
-        raise PermissionDenied("You are not authorized to review this record.")
-
-    @action(detail=True, methods=["post"], url_path="review/approve")
-    def review_approve(self, request, pk=None):
-        achievement = self.get_object()
-        self._require_reviewer(request, achievement)
-        if achievement.status not in {Achievement.Status.SUBMITTED, Achievement.Status.RESUBMITTED}:
-            raise ValidationError({"detail": f"Cannot verify from status '{achievement.status}'."})
-        with transaction.atomic():
-            old = achievement.status
             achievement.status = Achievement.Status.VERIFIED
             achievement.verified_at = timezone.now()
             achievement.verified_by = request.user
-            achievement.save(update_fields=["status", "verified_at", "verified_by"])
+            achievement.save(update_fields=["status", "submitted_at", "verified_at", "verified_by"])
             achievement.documents.update(verification_status=EvidenceDocument.VerificationStatus.VERIFIED)
-            _write_audit(request.user, "verify", achievement, old, achievement.status)
-        notify_achievement_verified(achievement)
-        return Response(AchievementSerializer(achievement, context={"request": request}).data)
-
-    def _require_remarks(self, request):
-        remarks = (request.data.get("remarks") or "").strip()
-        if not remarks:
-            raise ValidationError({"remarks": "Remarks are required for this action."})
-        return remarks
-
-    @action(detail=True, methods=["post"], url_path="review/request-corrections")
-    def review_request_corrections(self, request, pk=None):
-        achievement = self.get_object()
-        self._require_reviewer(request, achievement)
-        remarks = self._require_remarks(request)
-        if achievement.status not in {Achievement.Status.SUBMITTED, Achievement.Status.RESUBMITTED}:
-            raise ValidationError({"detail": f"Cannot request corrections from status '{achievement.status}'."})
-        with transaction.atomic():
-            old = achievement.status
-            achievement.status = Achievement.Status.CORRECTIONS_REQUIRED
-            achievement.remarks = remarks
-            achievement.save(update_fields=["status", "remarks"])
-            _write_audit(request.user, "request_corrections", achievement, old, achievement.status, remarks)
-        notify_corrections_requested(achievement)
-        return Response(AchievementSerializer(achievement, context={"request": request}).data)
-
-    @action(detail=True, methods=["post"], url_path="review/reject")
-    def review_reject(self, request, pk=None):
-        achievement = self.get_object()
-        self._require_reviewer(request, achievement)
-        remarks = self._require_remarks(request)
-        with transaction.atomic():
-            old = achievement.status
-            achievement.status = Achievement.Status.REJECTED
-            achievement.remarks = remarks
-            achievement.save(update_fields=["status", "remarks"])
-            _write_audit(request.user, "reject", achievement, old, achievement.status, remarks)
+            _write_audit(request.user, "submit", achievement, old, achievement.status)
+        if not achievement.documents.exists():
+            notify_missing_evidence(achievement)
         return Response(AchievementSerializer(achievement, context={"request": request}).data)
 
     @action(detail=True, methods=["post"], url_path="iqac/lock", permission_classes=[permissions.IsAuthenticated])
@@ -342,7 +254,7 @@ class EvidenceDocumentViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Only the submitting faculty member can delete this attachment.")
         if doc.achievement.status == Achievement.Status.IQAC_LOCKED:
             raise ValidationError(
-                {"detail": "This record has been locked in by IQAC — ask IQAC to unlock it first."}
+                {"detail": "This record has been locked in by IQAC. Ask IQAC to unlock it first."}
             )
         achievement = doc.achievement
         doc.soft_delete(by_user=request.user, reason="Removed by uploader.")

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FAAEMS — Faculty Achievement & Accreditation Evidence Management System
+   FAAEMS, Faculty Achievement & Accreditation Evidence Management System
    LIGHT ACADEMIC THEME (Inspired by Oxford University, Unipix & Eduker)
    Thakur College of Engineering & Technology (TCET)
    ========================================================================== */
@@ -82,7 +82,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  /* The page still scrolls with mouse wheel/trackpad/touch — there's just
+  /* The page still scrolls with mouse wheel/trackpad/touch, there's just
      no visible scrollbar track/thumb down the side, anywhere on the site. */
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -103,7 +103,7 @@ body {
 }
 
 /* ==========================================================================
-   LOGIN GATE — page content stays hidden and the login modal stays forced
+   LOGIN GATE, page content stays hidden and the login modal stays forced
    open until a session is confirmed. See the inline unlock check in
    index.html's <head> and initAccountMenu()/enterPortal() in app.js.
    ========================================================================== */
@@ -172,7 +172,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* A floor on top of space-between — without it, a wider header-actions
+  /* A floor on top of space-between, without it, a wider header-actions
      group (account menu + notification bell + portal button) can crowd
      right up against the nav links with almost no breathing room. */
   gap: 1.75rem;
@@ -219,7 +219,7 @@ button {
 
 .brand-name {
   /* Shrinks smoothly between ~1024px and ~1400px viewports instead of
-     wrapping onto a 3rd line ("TCET" / "Faculty" / "Contribution") — a
+     wrapping onto a 3rd line ("TCET" / "Faculty" / "Contribution"), a
      wrapped 3-line block is taller than the fixed 80px header, so its top
      line renders above y:0 and gets cut off by the viewport edge. nowrap
      keeps it on one line at any width; the fixed 80px header no longer has
@@ -235,7 +235,7 @@ button {
 }
 
 .brand-highlight {
-  /* White here (not the earlier blue) — the hero banner behind the
+  /* White here (not the earlier blue), the hero banner behind the
      unscrolled header is itself a blue sky photo, so blue-on-blue text was
      unreadable. Once scrolled past the hero the header goes light and this
      switches back to a real blue below (.scrolled-header .brand-highlight). */
@@ -582,7 +582,7 @@ button {
   text-align: center;
 }
 
-/* The pending-faculty-registration card inside the notification dropdown —
+/* The pending-faculty-registration card inside the notification dropdown , 
    deliberately bigger and more insistent than a plain .notif-item, since a
    faculty member can't log in at all until this gets acted on. */
 .notif-approval-card {
@@ -980,7 +980,7 @@ section[id] {
   color: #ffffff;
 }
 
-.campus-highlights-section {
+.highlights-section {
   width: 100%;
   background-color: var(--bg-page);
   padding: 4.5rem 0 3.5rem;
@@ -1235,7 +1235,7 @@ section[id] {
 }
 
 /* Single static AI & ML department card (replaces the old multi-department
-   marquee — the college is onboarding one department at a time). */
+   marquee, the college is onboarding one department at a time). */
 .aiml-dept-static-card {
   display: flex;
   align-items: center;
@@ -1298,8 +1298,8 @@ section[id] {
   grid-template-columns: 1.2fr 0.8fr;
   gap: 3rem;
   /* start (not stretch): with stretch, an auto-sized grid row takes its
-     height from the tallest item — the leaderboard's full unclamped list of
-     every faculty member — and then stretches the *shorter* calendar card
+     height from the tallest item, the leaderboard's full unclamped list of
+     every faculty member, and then stretches the *shorter* calendar card
      to match, leaving a slab of blank white space under its actual content.
      With start, each column keeps its own natural height, so the calendar
      renders at its real ~intrinsic size and syncLeaderboardHeight() (app.js)
@@ -1312,7 +1312,7 @@ section[id] {
   flex-direction: column;
   /* Grid items default to min-width:auto, so without this a wide-enough
      descendant (e.g. a leaderboard row) can force this whole column past
-     its 1fr track — and everything inside that relies on percentage
+     its 1fr track, and everything inside that relies on percentage
      widths follows it off-screen. min-width:0 lets the flex:1/min-width:0
      rules already on .lb-row-info etc. actually take effect. */
   min-width: 0;
@@ -1496,7 +1496,7 @@ section[id] {
 }
 
 /* Leaderboard's scroll area fills whatever height JS measured from the
-   calendar column (see syncLeaderboardHeight in app.js) — CSS Grid's
+   calendar column (see syncLeaderboardHeight in app.js), CSS Grid's
    align-items: stretch doesn't reliably propagate a definite height through
    an auto-sized row into a nested flex child, so this is set inline by JS
    instead of relied on purely via CSS. */
@@ -1745,7 +1745,7 @@ section[id] {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  /* Same grid-blowout fix as .capabilities-cards-wrapper above — the
+  /* Same grid-blowout fix as .capabilities-cards-wrapper above, the
      calendar grid's own fixed-ish day-cell widths can otherwise force this
      column past its 1fr track on narrow screens. */
   min-width: 0;
@@ -2363,7 +2363,7 @@ section[id] {
   box-shadow: 0 0 0 3px rgba(2, 65, 205, 0.12);
 }
 
-/* Time display button that opens the circular clock picker below — a
+/* Time display button that opens the circular clock picker below, a
    plain <input type="time"> renders in whatever 24-hour/12-hour format
    the browser/OS locale picks, which isn't controllable from HTML/CSS, so
    the actual choice happens in the clock popover instead. The 24-hour
@@ -3076,7 +3076,7 @@ section[id] {
   transition: background var(--transition-fast), color var(--transition-fast);
 }
 
-/* View is the primary, most-used action on an attachment — it gets its
+/* View is the primary, most-used action on an attachment, it gets its
    own tinted color so it doesn't blend into Download/Delete at a glance. */
 .dossier-attachment-icon-btn-view {
   width: 30px;
@@ -3316,7 +3316,7 @@ section[id] {
    modal is already open (e.g. Delete Account's own confirmation) without
    closing that modal first. With every .modal-backdrop tied at the same
    z-index, which one actually painted on top came down to pure DOM order
-   — fine by luck in some flows, but in others (Delete Account) the
+  , fine by luck in some flows, but in others (Delete Account) the
    underlying modal happened to sit later in the HTML and silently
    covered this one: the confirmation was technically open (class applied,
    its own OK/Cancel listeners live) but invisible and unreachable by a
@@ -3486,7 +3486,7 @@ section[id] {
   color: var(--text-primary);
 }
 
-/* Live password strength feedback (Google-signup style) — informational
+/* Live password strength feedback (Google-signup style), informational
    only, never blocks submission; see computePasswordStrength in app.js. */
 .password-strength-meter {
   display: flex;
@@ -4603,7 +4603,7 @@ section[id] {
 }
 
 /* Only shown for a year the signed-in faculty added themselves via
-   "+ Add Year" (server-reported can_remove) — the institution's default
+   "+ Add Year" (server-reported can_remove), the institution's default
    years never show this. See CycleViewSet.remove_mine on the backend. */
 .year-delete-btn {
   margin-top: 0.4rem;
@@ -5092,7 +5092,7 @@ section[id] {
     height: 38px;
   }
   /* These dropdowns are absolutely positioned off their trigger button
-     (right:0, fixed width up to 340px) — fine when the trigger sits at
+     (right:0, fixed width up to 340px), fine when the trigger sits at
      the header's own right edge, but on mobile the hamburger sits to its
      right instead, so anchoring to the viewport edges instead is what
      keeps them from running off-screen. */
@@ -5130,7 +5130,7 @@ section[id] {
     font-size: 0.92rem;
     text-align: center;
   }
-  /* .btn is nowrap everywhere by default (fine at desktop widths) — on a
+  /* .btn is nowrap everywhere by default (fine at desktop widths), on a
      phone a long label ("Open Achievement Submission Form →", etc.) can
      be wider than its own container even after that container's own
      mobile sizing, so let it wrap here instead of pushing past the edge. */
@@ -5170,7 +5170,7 @@ section[id] {
 
 /* Small phones (~480px and under): the header still doesn't fit at 768px
    sizing once the brand wordmark + logo (~250px) share the row with the
-   account pill + notif bell + hamburger — the brand text is the one piece
+   account pill + notif bell + hamburger, the brand text is the one piece
    that can give up width without losing function, so it collapses to just
    "TCET" here rather than truncating the account pill further. */
 @media (max-width: 480px) {
@@ -5185,7 +5185,7 @@ section[id] {
     width: 34px;
     height: 34px;
   }
-  /* Academic planner's month-nav (prev/next + "+ Add Task") — same
+  /* Academic planner's month-nav (prev/next + "+ Add Task"), same
      no-wrap-row overflow as the site header, just scoped to this card
      instead of the whole page. */
   .calendar-header-badge-row,
@@ -5199,7 +5199,7 @@ section[id] {
   /* .carousel-component (row flex, no wrap) has the arrows out of flow
      (position:absolute) but .carousel-track-viewport (width:100%) and
      .carousel-dots-wrap (auto width, ~320px for 23 dots) are still both
-     real flex siblings competing for the same row — at desktop widths
+     real flex siblings competing for the same row, at desktop widths
      there's enough room for both so this never shows, but on a narrow
      phone flexbox shrinks the viewport down to near-0 to make room for
      the dots. Wrapping the dots onto their own row fixes it. */
@@ -5215,7 +5215,7 @@ section[id] {
   }
   /* Dossier modal header (avatar + name/badges as a centered row) leaves
      an awkward gap under the avatar once the badges wrap onto several
-     lines next to it at phone widths — stacking it removes the dead
+     lines next to it at phone widths, stacking it removes the dead
      space and reads better top-to-bottom anyway. */
   .dossier-header-profile {
     flex-direction: column;
@@ -5223,3 +5223,37 @@ section[id] {
     gap: 0.85rem;
   }
 }
+
+.lb-year-select { appearance: auto; padding-right: 0.4rem; cursor: pointer; }
+
+/* ---- Full-page overlays: the HOD's Report page and the report viewer ---- */
+.fullpage-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: none;
+  flex-direction: column;
+  background: var(--bg-page);
+}
+.fullpage-overlay.open { display: flex; }
+.fullpage-viewer { z-index: 2500; }
+.fullpage-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+}
+.fullpage-title { font-weight: 700; color: var(--text-primary); flex: 1; }
+.fullpage-back-btn { white-space: nowrap; }
+.fullpage-frame { flex: 1; width: 100%; border: 0; background: #e5e7eb; }
+.report-page-body {
+  max-width: 640px;
+  margin: 12vh auto 0;
+  padding: 0 1.25rem;
+  text-align: center;
+}
+.report-page-body h2 { font-size: 1.8rem; margin-bottom: 0.6rem; color: var(--text-primary); }
+.report-page-body p { color: var(--text-secondary); margin-bottom: 1.6rem; }

@@ -40,7 +40,7 @@ def generate_report_docx(framework, cycle) -> tuple[bytes, list[str]]:
     grouped = _grouped_mappings(framework.id, cycle.id)
 
     doc = Document()
-    title = doc.add_heading(f"{framework.name} — Accreditation Evidence Report", level=0)
+    title = doc.add_heading(f"{framework.name}: Accreditation Evidence Report", level=0)
     title.runs[0].font.size = Pt(22)
 
     meta = doc.add_paragraph()
@@ -57,7 +57,7 @@ def generate_report_docx(framework, cycle) -> tuple[bytes, list[str]]:
         doc.add_heading(f"Criterion {criterion.code}: {criterion.title}", level=1)
         sub_map = grouped[criterion]
         for sub in sorted(sub_map, key=lambda s: s.code):
-            doc.add_heading(f"{sub.code} — {sub.description}", level=2)
+            doc.add_heading(f"{sub.code}: {sub.description}", level=2)
             table = doc.add_table(rows=1, cols=5)
             table.style = "Light Grid Accent 1"
             hdr = table.rows[0].cells
@@ -68,8 +68,8 @@ def generate_report_docx(framework, cycle) -> tuple[bytes, list[str]]:
                 row[0].text = achievement.evidence_id
                 row[1].text = achievement.faculty.full_name
                 row[2].text = achievement.title
-                row[3].text = achievement.issuing_organization or "—"
-                row[4].text = achievement.achievement_date.isoformat() if achievement.achievement_date else "—"
+                row[3].text = achievement.issuing_organization or "Not stated"
+                row[4].text = achievement.achievement_date.isoformat() if achievement.achievement_date else "Not stated"
                 evidence_ids.append(achievement.evidence_id)
             doc.add_paragraph()
 

@@ -32,6 +32,17 @@ ALLOWED_EMAIL_DOMAINS = env.list("ALLOWED_EMAIL_DOMAINS", default=["tcetmumbai.i
 # the first configured domain is what registration/login forms default to.
 ALLOWED_EMAIL_DOMAIN = ALLOWED_EMAIL_DOMAINS[0]
 
+# Local LLM used to analyse uploaded attachments for the NBA report (LAN
+# deployment: Ollama on the host machine, no cloud API). If it is
+# unreachable the rule-based extractor in apps/achievements/analysis.py is used.
+OLLAMA_URL = env("OLLAMA_URL", default="http://host.docker.internal:11434")
+OLLAMA_MODEL = env("OLLAMA_MODEL", default="llama3.1:8b")
+OLLAMA_TIMEOUT = env.int("OLLAMA_TIMEOUT", default=300)
+OLLAMA_KEEP_ALIVE = env("OLLAMA_KEEP_ALIVE", default="24h")
+OLLAMA_VISION_MODEL = env("OLLAMA_VISION_MODEL", default="gemma3:latest")
+ANALYSIS_USE_VISION = env.bool("ANALYSIS_USE_VISION", default=True)
+ANALYSIS_USE_LLM = env.bool("ANALYSIS_USE_LLM", default=True)
+
 if not DEBUG and SECRET_KEY == "change-me-to-a-long-random-value":
     raise RuntimeError(
         "DJANGO_SECRET_KEY is still the placeholder value. Set a real secret "

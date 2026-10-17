@@ -48,13 +48,11 @@ dist/
 .vite/
 **/.vite/
 
-# Editors, OS & AI Tooling
+# Editors & OS
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
-.claude/
-**/.claude/
 
 # Docker volumes data (if bind-mounted locally)
 pgdata/

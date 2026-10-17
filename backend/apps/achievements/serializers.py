@@ -9,6 +9,7 @@ from rest_framework import serializers
 
 from apps.achievements.file_validation import hash_file, validate_evidence_file
 from apps.achievements.models import Achievement, EvidenceDocument, EvidenceMapping
+from apps.achievements.analysis import analyze_document
 from apps.achievements.ocr import extract_text_and_confidence, guess_fields
 from apps.achievements.preview import CONVERTIBLE_CONTENT_TYPES, convert_to_pdf
 from apps.criteria.models import SubCriterion
@@ -35,6 +36,10 @@ def _run_ocr_in_background(document_id):
         doc.ocr_confidence = ocr_confidence
         doc.ocr_extracted_fields = guess_fields(ocr_text)
         doc.save(update_fields=["ocr_text", "ocr_confidence", "ocr_extracted_fields"])
+        # Turn the raw text into structured report facts (dates, role,
+        # topic, co-speakers, amounts ...) with the local LLM — slow on a
+        # CPU-only server, which is exactly why it lives in this thread.
+        analyze_document(doc)
     except Exception as exc:  # noqa: BLE001 — background best-effort, never re-raise
         logger.warning("Background OCR failed for document %s: %s", document_id, exc)
     finally:

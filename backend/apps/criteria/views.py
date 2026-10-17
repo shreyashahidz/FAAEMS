@@ -59,6 +59,12 @@ class CycleViewSet(AdminManagedViewSet):
             return [permissions.IsAuthenticated()]
         return super().get_permissions()
 
+    def list(self, request, *args, **kwargs):
+        from apps.criteria.academic_year import ensure_current_cycle
+
+        ensure_current_cycle()  # a new academic year appears by itself on 1 June
+        return super().list(request, *args, **kwargs)
+
     def get_queryset(self):
         qs = super().get_queryset()
         user = self.request.user
@@ -134,7 +140,7 @@ class CycleViewSet(AdminManagedViewSet):
         achievements = Achievement.objects.filter(faculty=faculty, cycle=cycle)
         if achievements.filter(status=Achievement.Status.IQAC_LOCKED).exists():
             raise ValidationError(
-                {"detail": "Some of your records for this year have been locked in by IQAC — ask IQAC to unlock them first."}
+                {"detail": "Some of your records for this year have been locked in by IQAC. Ask IQAC to unlock them first."}
             )
         for achievement in achievements:
             achievement.soft_delete(by_user=request.user, reason=f"Academic year {cycle.label} removed by faculty.")

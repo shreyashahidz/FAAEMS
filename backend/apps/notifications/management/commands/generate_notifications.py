@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from apps.accounts.models import FacultyProfile
 from apps.achievements.models import Achievement
-from apps.notifications.services import create_notification_once, remind_pending_verifications
+from apps.notifications.services import create_notification_once
 from apps.notifications.models import Notification
 
 
@@ -25,12 +25,7 @@ class Command(BaseCommand):
         created = 0
         created += self._scan_expiring_certificates(window_days)
         created += self._scan_incomplete_profiles()
-        # Resurfaces (bumps, doesn't duplicate) any "awaiting your
-        # verification" notice that's gone stale (20h+) while its
-        # achievement is still unverified — an HOD who hasn't acted keeps
-        # seeing it as a fresh unread item once a day.
-        remind_pending_verifications()
-        self.stdout.write(self.style.SUCCESS(f"Notification scan complete — {created} new notification(s)."))
+        self.stdout.write(self.style.SUCCESS(f"Notification scan complete: {created} new notification(s)."))
 
     def _scan_expiring_certificates(self, window_days):
         cutoff = timezone.now().date() + timedelta(days=window_days)

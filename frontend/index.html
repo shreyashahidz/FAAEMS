@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Faculty Contribution — Faculty Achievement & Accreditation Evidence Management System</title>
+  <title>Faculty Contribution: Faculty Achievement & Accreditation Evidence Management System</title>
   <meta name="description" content="Faculty Contribution: Institutional evidence management, NBA Tier-I SAR Criterion 6 compliance, and verified faculty achievement tracking.">
 
   <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=31.6">
+  <link rel="stylesheet" href="styles.css?v=31.9">
 
   <!-- Login gate: defaults locked (see class on <html>). If a still-valid
        session token is already saved, unlock immediately so a returning
@@ -25,7 +25,7 @@
           document.documentElement.classList.remove('faems-gate-locked');
         }
       } catch (e) {
-        // malformed sessionStorage — stay locked, the login form still works
+        // malformed sessionStorage, stay locked, the login form still works
       }
     })();
   </script>
@@ -49,11 +49,11 @@
       <!-- Navigation Links -->
       <nav class="main-nav" id="mainNav">
         <a href="#hero" class="nav-link active" data-nav="hero">Home</a>
-        <a href="#departments" class="nav-link" data-nav="departments">Departments</a>
-        <a href="#hod-section" class="nav-link" data-nav="hods">Leaderboard</a>
-        <a href="#faculties-section" class="nav-link" data-nav="faculties">Faculties</a>
+        <a href="#report" class="nav-link" id="navReportLink" data-nav="report" style="display:none;">Report</a>
+        <a href="#leaderboard" class="nav-link" data-nav="hods">Leaderboard</a>
+        <a href="#faculties" class="nav-link" data-nav="faculties">Faculties</a>
         <div class="nav-dropdown">
-          <a href="#criteria-details" class="nav-link nav-link-with-arrow" data-nav="criteria">
+          <a href="#criteria" class="nav-link nav-link-with-arrow" data-nav="criteria">
             Criteria
             <svg class="dropdown-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 4.5l3 3 3-3"/>
@@ -68,17 +68,12 @@
           <button type="button" class="btn btn-ghost" id="loginBtn">Faculty Login</button>
           <div class="account-dropdown" id="accountDropdown">
             <div class="account-dropdown-header">
-              <div class="account-dropdown-name" id="accountDropdownName">—</div>
-              <div class="account-dropdown-role" id="accountDropdownRole">—</div>
+              <div class="account-dropdown-name" id="accountDropdownName"></div>
+              <div class="account-dropdown-role" id="accountDropdownRole"></div>
             </div>
             <button type="button" class="account-dropdown-item" id="addFacultyMenuBtn" style="display:none;">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
               Add Faculty
-            </button>
-            <button type="button" class="account-dropdown-item" id="approveFacultyMenuBtn" style="display:none;">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              Approve Faculty
-              <span class="account-dropdown-item-badge" id="approveFacultyBadge" style="display:none;">0</span>
             </button>
             <button type="button" class="account-dropdown-item" id="updateDetailsMenuBtn">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -134,7 +129,7 @@
               <a href="#departments" class="btn btn-hero-primary" id="heroGetStartedBtn">
                 <span>Explore Departments &amp; Faculties</span>
               </a>
-              <a href="#hod-section" class="btn btn-hero-glass" id="heroLearnMoreBtn">
+              <a href="#leaderboard" class="btn btn-hero-glass" id="heroLearnMoreBtn">
                 <span>View Leaderboard &amp; Criteria Matrix</span>
               </a>
             </div>
@@ -145,7 +140,7 @@
     </section>
 
     <!-- 4 HIGHLIGHT CARDS & STATS STRIP (Appears When Scrolling Down) -->
-    <section class="campus-highlights-section" id="campus-highlights">
+    <section class="highlights-section" id="highlights">
       <div class="hero-after-wrap">
         <div class="campus-feature-cards-grid">
           
@@ -181,7 +176,7 @@
           </a>
 
           <!-- Card 3: Evidence Vault -->
-          <a href="#faculties-section" class="campus-feature-card">
+          <a href="#faculties" class="campus-feature-card">
             <div class="feature-card-icon-wrap icon-green">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -199,7 +194,7 @@
           </a>
 
           <!-- Card 4: Faculty Leadership -->
-          <a href="#hod-section" class="campus-feature-card">
+          <a href="#leaderboard" class="campus-feature-card">
             <div class="feature-card-icon-wrap icon-purple">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -210,7 +205,7 @@
             </div>
             <div class="feature-card-body">
               <h3 class="feature-card-title">Faculty Contribution Leaderboard</h3>
-              <p class="feature-card-desc">Real-time ranking by verified achievements, FDP/STTP training, and research contributions.</p>
+              <p class="feature-card-desc">Real-time ranking by Criterion 6 criteria filled, FDP/STTP training, and research contributions.</p>
               <span class="feature-card-link">View Leaderboard →</span>
             </div>
           </a>
@@ -232,7 +227,7 @@
           </div>
           <div class="campus-stat-divider"></div>
           <div class="campus-stat-item">
-            <span class="campus-stat-number" id="heroFacultyCountStat">—</span>
+            <span class="campus-stat-number" id="heroFacultyCountStat"></span>
             <span class="campus-stat-label">Faculty Dossiers</span>
             <span class="campus-stat-sub">With MinIO &amp; SHA-256 Hashes</span>
           </div>
@@ -240,7 +235,7 @@
           <div class="campus-stat-item">
             <span class="campus-stat-number">100%</span>
             <span class="campus-stat-label">NBA Criteria Readiness</span>
-            <span class="campus-stat-sub">Criterion 6.1 – 6.2 Full Coverage</span>
+            <span class="campus-stat-sub">Criterion 6.1 to 6.2 Full Coverage</span>
           </div>
         </div>
 
@@ -270,17 +265,17 @@
 
 
     <!-- HODs CARDS & DEPARTMENT OVERALL CONCENTRIC RADIAL GAUGE GRAPH -->
-    <section class="capabilities-section" id="hod-section">
+    <section class="capabilities-section" id="leaderboard">
       <div class="capabilities-container">
 
         <div class="capabilities-row-layout">
           <!-- LEFT SIDE: Faculty Contribution Leadership Board (real, verified-achievement
-               ranking — no dummy data, computed from the same records IQAC/HOD review) -->
+               ranking, no dummy data, computed from the same records IQAC/HOD review) -->
           <div class="capabilities-cards-wrapper" id="leaderboardWrapper">
             <div class="section-badge-title">
               <span class="section-tag-pill">Institutional Leadership</span>
               <h2 class="sub-heading-text">Faculty Contribution Leaderboard</h2>
-              <p class="sub-desc-text">Real-time ranking by verified achievements — NBA Criterion 6 submissions, FDP/STTP training, and research contributions confirmed by HOD/IQAC review.</p>
+              <p class="sub-desc-text">Real-time ranking by Criterion 6 criteria filled for the academic year, a criterion counts once when it has a submission with an attachment.</p>
             </div>
 
             <!-- Search & Results Row -->
@@ -302,7 +297,7 @@
             <!-- Scrollable Leaderboard List -->
             <div class="hod-scroll-wrapper lb-scroll-wrapper" id="leaderboardScrollWrapper">
               <div class="lb-rows-container" id="leaderboardRowsContainer">
-                <!-- Populated dynamically via JS — real verified-achievement counts -->
+                <!-- Populated dynamically via JS, criteria filled per faculty -->
                 <div class="lb-loading-state" id="leaderboardLoadingState">Loading leaderboard…</div>
               </div>
 
@@ -325,7 +320,7 @@
             <!-- Calendar Card Header -->
             <div class="calendar-header-block">
               <div class="calendar-header-badge-row">
-                <span class="calendar-active-dept-pill" id="calActiveDeptBadge">B.Tech – AI &amp; ML</span>
+                <span class="calendar-active-dept-pill" id="calActiveDeptBadge">B.Tech AI &amp; ML</span>
                 <span class="calendar-live-pulse-badge"><span class="pulse-dot"></span> Academic Planner</span>
               </div>
               <h3 class="calendar-card-title">Academic Schedule &amp; Calendar</h3>
@@ -412,19 +407,9 @@
     </section>
 
     <!-- DEPARTMENT FACULTIES SECTION -->
-    <section class="chaos-section" id="faculties-section">
+    <section class="chaos-section" id="faculties">
       <div class="chaos-container">
         
-        <!-- Category Tag Pills -->
-        <div class="chaos-tags-wrap">
-          <div class="chaos-tag">
-            <span class="tag-sparkle">✦</span> Verified Evidence Vault
-          </div>
-          <div class="chaos-tag">
-            <span class="tag-sparkle">✦</span> NBA Criterion 6 Dossiers
-          </div>
-        </div>
-
         <!-- Dynamic Department Faculties Headline -->
         <h2 class="chaos-headline">
           <span id="dynamicDeptHeading">AI &amp; ML</span><br>
@@ -436,27 +421,17 @@
           Browse verified faculty achievements, MOOC certifications, FDP participations, research publications, and evidence hashes. Click any faculty card to inspect full dossiers.
         </p>
 
-        <!-- HOD-only Active/Non-active roster toggle — hidden for every
+        <!-- HOD-only Active/Non-active roster toggle, hidden for every
              other role (see initFacultySearchAndCarousel in app.js).
              Non-active shows anyone whose account has been deactivated
              (self-service scheduled departure past its date, or a formal
              exit) with their name/employee ID/time period and every
-             achievement they ever submitted still intact — nothing here
+             achievement they ever submitted still intact, nothing here
              is ever deleted, only who can see it. -->
         <div class="roster-toggle-wrap" id="rosterToggleWrap" style="display:none;">
           <button type="button" class="roster-toggle-btn active" id="rosterToggleActiveBtn" data-roster="active">Active</button>
           <button type="button" class="roster-toggle-btn" id="rosterToggleNonActiveBtn" data-roster="non_active">Non-active</button>
         </div>
-
-        <!-- HOD-only — opens the month/year picker, then generates that
-             month's NBA Criterion 6 report as a PDF from whatever's
-             actually verified/submitted so far (see
-             FacultyProfileViewSet.nba_report / generate_monthly_nba_report).
-             Hidden for every other role, same gate as the roster toggle. -->
-        <button type="button" class="btn btn-outline" id="generateNbaReportBtn" style="display:none;margin-bottom:1.25rem;gap:0.5rem;">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          <span>Generate NBA Report</span>
-        </button>
 
         <!-- INSTANT SEARCH BAR FOR FACULTY (As requested: "keep a search bar so faculty can search their name instead of scrolling") -->
         <div class="faculty-search-wrapper">
@@ -500,7 +475,7 @@
 
         </div>
 
-        <!-- HOD-only "Non-active" roster — a plain grid, not the carousel
+        <!-- HOD-only "Non-active" roster, a plain grid, not the carousel
              (paging/search above is wired to the active carousel's own
              cards array; mixing non-active in risked corrupting that
              state, so this is deliberately separate markup, shown instead
@@ -514,7 +489,7 @@
     <!-- ==========================================================================
          ACHIEVEMENT SUBMISSION FORM (Horizontal Workflow Across Full Laptop Width)
          ========================================================================== -->
-    <section class="submission-section" id="criteria-details">
+    <section class="submission-section" id="criteria">
       <div class="submission-container">
         
         <!-- Section Header -->
@@ -522,7 +497,7 @@
           <span class="section-tag-pill">Institutional Evidence Portal</span>
           <h2 class="sub-heading-text">Faculty Achievement Submission</h2>
           <p class="sub-desc-text">
-            Submit verified departmental achievements, professional development, and research accomplishments for formal HOD verification and institutional accreditation reporting.
+            Submit verified departmental achievements, professional development, and research accomplishments for institutional accreditation reporting.
           </p>
         </div>
 
@@ -636,7 +611,7 @@
                   </svg>
                 </div>
                 <div class="sub-dropzone-title">Click or drag files to this area</div>
-                <div class="sub-dropzone-subtitle">PDF, Word, PowerPoint, Excel, CSV, JPG or PNG, up to 40MB each — multiple files allowed.</div>
+                <div class="sub-dropzone-subtitle">PDF, Word, PowerPoint, Excel, CSV, JPG or PNG, up to 40MB each, multiple files allowed.</div>
               </div>
             </div>
 
@@ -659,7 +634,7 @@
               <svg class="sub-send-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
               </svg>
-              <span>Submit for Review</span>
+              <span>Submit</span>
             </button>
           </div>
 
@@ -679,15 +654,15 @@
         <!-- Column 1: Brand & Resources -->
         <div class="footer-col brand-col">
           <div class="footer-brand-title">Faculty Contribution</div>
-          <p class="footer-bio-text">AI &amp; ML Department, TCET — est. 2020-21, 23 faculty. Student chapter: ACM SIGAI.<br>
+          <p class="footer-bio-text">AI &amp; ML Department, TCET, est. 2020-21, 23 faculty. Student chapter: ACM SIGAI.<br>
             <a href="aiml-department.html" target="_blank" rel="noopener" class="footer-vision-link">Vision, Mission &amp; Outcomes (PEO / PO / PSO) →</a>
           </p>
           <h4 class="footer-col-title">Institutional Resources</h4>
           <ul class="footer-links">
             <li><a href="#hero">About Accreditation</a></li>
             <li><a href="#departments">NBA Tier-I SAR Guidelines</a></li>
-            <li><a href="#hod-section">Criterion 6 Evaluation Table</a></li>
-            <li><a href="#faculties-section">Faculty Evidence Vault</a></li>
+            <li><a href="#leaderboard">Criterion 6 Evaluation Table</a></li>
+            <li><a href="#faculties">Faculty Evidence Vault</a></li>
           </ul>
         </div>
 
@@ -698,8 +673,8 @@
             NBA Tier-I Undergraduate Engineering evaluation criteria for faculty professional development and research contributions.
           </p>
           <ul class="footer-links">
-            <li><a href="#criteria-details">Professional Development Activities</a></li>
-            <li><a href="#criteria-details">Research and Development Activities</a></li>
+            <li><a href="#criteria">Professional Development Activities</a></li>
+            <li><a href="#criteria">Research and Development Activities</a></li>
             <li><a href="#departments">IQAC Compliance Verification</a></li>
           </ul>
         </div>
@@ -711,9 +686,9 @@
             PostgreSQL immutable audit trail, MinIO evidence document storage, and automated NBA SAR report generation.
           </p>
           <ul class="footer-links">
-            <li><a href="#faculties-section">Dual HOD Review Flow</a></li>
-            <li><a href="#faculties-section">SHA-256 Hash Duplicate Check</a></li>
-            <li><a href="#faculties-section">Alumni Faculty Archive</a></li>
+            <li><a href="#faculties">Dual HOD Review Flow</a></li>
+            <li><a href="#faculties">SHA-256 Hash Duplicate Check</a></li>
+            <li><a href="#faculties">Alumni Faculty Archive</a></li>
           </ul>
         </div>
 
@@ -721,9 +696,9 @@
         <div class="footer-col contact-col">
           <h4 class="footer-col-title">Helpdesk &amp; Support</h4>
           <p class="footer-contact-instruction">Internal institutional queries:</p>
-          <a href="tel:+912228461891" class="footer-phone">022 - 2846 1891</a>
+          <a href="tel:+912228461891" class="footer-phone">022 2846 1891</a>
           <a href="mailto:tcet@thakureducation.org" class="footer-phone" style="margin-top:0.35rem;">tcet@thakureducation.org</a>
-          <p class="footer-contact-instruction" style="margin-top:0.6rem;">Thakur College of Engineering &amp; Technology<br>A-Block, Thakur Educational Campus, Shyamnarayan Thakur Marg, Thakur Village, Kandivali (E), Mumbai - 400101.</p>
+          <p class="footer-contact-instruction" style="margin-top:0.6rem;">Thakur College of Engineering &amp; Technology<br>A-Block, Thakur Educational Campus, Shyamnarayan Thakur Marg, Thakur Village, Kandivali (E), Mumbai 400101.</p>
 
           <!-- Search form in footer -->
           <form class="footer-newsletter-form" id="newsletterForm">
@@ -905,7 +880,7 @@
         </button>
       </form>
 
-      <!-- REGISTER FORM — creates a plain Faculty account only (role is
+      <!-- REGISTER FORM, creates a plain Faculty account only (role is
            never client-supplied); becoming HOD/IQAC/Super Admin stays an
            IQAC/Super Admin action, done via "Add Faculty" elsewhere. -->
       <form class="modal-form" id="registerForm" style="display:none;">
@@ -969,7 +944,6 @@
           <div class="form-group">
             <label for="regGender">Gender</label>
             <select id="regGender" class="form-input">
-              <option value="">Prefer not to say</option>
               <option value="male">Male</option>
               <option value="female" selected>Female</option>
             </select>
@@ -999,7 +973,7 @@
         </button>
       </form>
 
-      <!-- MFA step — shown instead of the form above for HOD/IQAC/Super Admin
+      <!-- MFA step, shown instead of the form above for HOD/IQAC/Super Admin
            accounts, which require TOTP per the institution's security policy.
            Reuses the same modal-form / form-group / btn classes as the login
            form so it matches the design with no new styling. -->
@@ -1021,8 +995,8 @@
         </button>
       </form>
 
-      <!-- FORGOT PASSWORD — step 1: verify identity with email + date of birth
-           on file (no email/OTP dependency — matching the DOB on record IS
+      <!-- FORGOT PASSWORD, step 1: verify identity with email + date of birth
+           on file (no email/OTP dependency, matching the DOB on record IS
            the identity check). -->
       <form class="modal-form" id="forgotRequestForm" style="display:none;">
         <div class="form-group">
@@ -1049,7 +1023,7 @@
         </button>
       </form>
 
-      <!-- FORGOT PASSWORD — step 2: identity verified, set a new password -->
+      <!-- FORGOT PASSWORD, step 2: identity verified, set a new password -->
       <form class="modal-form" id="forgotResetForm" style="display:none;">
         <div class="form-group">
           <label for="forgotNewPassword">New Password</label>
@@ -1068,7 +1042,7 @@
     </div>
   </div>
 
-  <!-- MODAL: ADD FACULTY (HOD/IQAC/Super Admin only) — HOD is locked to their own
+  <!-- MODAL: ADD FACULTY (HOD/IQAC/Super Admin only), HOD is locked to their own
        department; IQAC/Super Admin may choose any department. -->
   <div class="modal-backdrop" id="addFacultyModal">
     <div class="modal-dialog login-dialog">
@@ -1121,31 +1095,39 @@
     </div>
   </div>
 
-  <!-- MODAL: APPROVE FACULTY — the HOD's dedicated page for every
-       self-registration awaiting her department's approval (or every
-       department's, for IQAC/Super Admin). Reached from the account menu
-       and from the notification dropdown's pending-approval card. -->
-  <div class="modal-backdrop" id="approveFacultyModal">
-    <div class="modal-dialog login-dialog">
-      <button class="modal-close-btn" id="closeApproveFacultyModal" aria-label="Close modal">&times;</button>
-      <div class="modal-header">
-        <span class="modal-tag">Registration Requests</span>
-        <h3 class="modal-title">Approve Faculty</h3>
-        <p class="modal-subtitle">New self-registrations wait here until you approve or reject them. Approving creates their account immediately.</p>
-      </div>
-      <div id="approveFacultyList" class="approve-faculty-list">
-        <p class="notif-empty-text">Loading…</p>
-      </div>
+  <!-- PAGE: REPORT, HOD only, opened from the "Report" link in the top bar. -->
+  <div class="fullpage-overlay" id="reportPage" aria-hidden="true">
+    <div class="fullpage-topbar">
+      <button type="button" class="btn btn-primary fullpage-back-btn" id="reportPageBackBtn">&larr; Back to main page</button>
+      <span class="fullpage-title">Report</span>
+    </div>
+    <div class="fullpage-body report-page-body">
+      <h2>Monthly Report</h2>
+      <p>Create the department's faculty contributions report for any month, then view or download it.</p>
+      <button type="button" class="btn btn-primary" id="generateNbaReportBtn" style="gap:0.5rem;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Generate Report</span>
+      </button>
     </div>
   </div>
 
-  <!-- MODAL: NBA REPORT MONTH/YEAR PICKER -->
+  <!-- FULL-PAGE REPORT VIEWER, the generated PDF, big, with a way back -->
+  <div class="fullpage-overlay fullpage-viewer" id="reportViewer" aria-hidden="true">
+    <div class="fullpage-topbar">
+      <button type="button" class="btn btn-primary fullpage-back-btn" id="reportViewerBackBtn">&larr; Back</button>
+      <span class="fullpage-title" id="reportViewerTitle">Report</span>
+      <button type="button" class="btn btn-outline" id="reportViewerDownloadBtn">Download</button>
+    </div>
+    <iframe id="reportViewerFrame" title="Report" class="fullpage-frame"></iframe>
+  </div>
+
+  <!-- MODAL: REPORT MONTH/YEAR PICKER -->
   <div class="modal-backdrop" id="nbaReportModal">
     <div class="modal-dialog login-dialog">
       <button class="modal-close-btn" id="closeNbaReportModal" aria-label="Close modal">&times;</button>
       <div class="modal-header">
-        <span class="modal-tag">Criterion 6 Report</span>
-        <h3 class="modal-title">Generate NBA Report</h3>
+        <span class="modal-tag">Monthly Report</span>
+        <h3 class="modal-title">Generate Report</h3>
         <p class="modal-subtitle">Pick the month and year to report on.</p>
       </div>
       <form class="modal-form" id="nbaReportForm">
@@ -1179,7 +1161,7 @@
       </form>
 
       <!-- Shown in place of the form above once a report's been generated
-           — the HOD picks what to do with it rather than it silently
+          , the HOD picks what to do with it rather than it silently
            downloading on its own. -->
       <div id="nbaReportResult" style="display:none;text-align:center;">
         <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1rem;">Report generated for <strong id="nbaReportResultLabel"></strong>.</p>
@@ -1190,26 +1172,17 @@
         <button type="button" class="btn btn-ghost btn-block" id="nbaReportBackBtn" style="margin-top:0.6rem;">Generate Another</button>
       </div>
 
-      <!-- Inline PDF preview — shown instead of opening a new tab (a
-           popup blocker can silently swallow a script-driven new-tab open
-           for a blob: URL even in direct response to a click), so View
-           always works the same way regardless of the browser's popup
-           settings. -->
-      <div id="nbaReportPreviewWrap" style="display:none;">
-        <iframe id="nbaReportPreviewFrame" title="NBA report preview" style="width:100%;height:60vh;border:1px solid var(--border-subtle);border-radius:10px;"></iframe>
-        <button type="button" class="btn btn-ghost btn-block" id="nbaReportPreviewBackBtn" style="margin-top:0.6rem;">Back</button>
-      </div>
     </div>
   </div>
 
-  <!-- MODAL: UPDATE DETAILS (self-service — every field except email) -->
+  <!-- MODAL: UPDATE DETAILS (self-service, every field except email) -->
   <div class="modal-backdrop" id="updateDetailsModal">
     <div class="modal-dialog login-dialog">
       <button class="modal-close-btn" id="closeUpdateDetailsModal" aria-label="Close modal">&times;</button>
       <div class="modal-header">
         <span class="modal-tag">Your Profile</span>
         <h3 class="modal-title">Update Details</h3>
-        <p class="modal-subtitle">Your institutional email can't be changed here — contact IQAC if it needs to change.</p>
+        <p class="modal-subtitle">Your institutional email can't be changed here, contact IQAC if it needs to change.</p>
       </div>
       <form class="modal-form" id="updateDetailsForm">
         <div class="form-group">
@@ -1239,19 +1212,19 @@
         </div>
 
         <!-- Shown only when the person editing IS the current HOD and she
-             just changed her own designation away from HOD — her
+             just changed her own designation away from HOD, her
              demotion and this successor's account creation happen
              together, atomically, when she saves (see transferHOD in
              api.js / FacultyProfileViewSet.transfer_hod). -->
         <div id="hodTransferBox" style="display:none;border:1.5px solid #f59e0b;background:#fffbeb;border-radius:12px;padding:1rem;margin-bottom:1.25rem;">
           <p style="font-weight:700;color:#92400e;font-size:0.9rem;margin-bottom:0.25rem;">Transfer your role to the next HOD</p>
-          <p style="font-size:0.8rem;color:#92400e;margin-bottom:0.9rem;">You're changing your own designation away from HOD — name who takes over department review authority.</p>
+          <p style="font-size:0.8rem;color:#92400e;margin-bottom:0.9rem;">You're changing your own designation away from HOD, name who takes over department review authority.</p>
 
           <div class="form-group">
             <label for="hodTransferMode">Who's taking over?</label>
             <select id="hodTransferMode" class="form-input">
               <option value="existing" selected>An existing faculty member in this department</option>
-              <option value="new">Someone new — create their account</option>
+              <option value="new">Someone new, create their account</option>
             </select>
           </div>
 
@@ -1332,9 +1305,8 @@
           <div class="form-group">
             <label for="udGender">Gender</label>
             <select id="udGender" class="form-input">
-              <option value="">Prefer not to say</option>
               <option value="male">Male</option>
-              <option value="female">Female</option>
+              <option value="female" selected>Female</option>
             </select>
           </div>
           <div class="form-group">
@@ -1344,7 +1316,7 @@
         </div>
         <div class="form-group">
           <label for="udBio">About / Dossier Summary</label>
-          <textarea id="udBio" rows="3" placeholder="Qualifications, years of experience, research interests — shown on your public faculty dossier." class="form-input" style="resize:vertical;font-family:inherit;"></textarea>
+          <textarea id="udBio" rows="3" placeholder="Qualifications, years of experience, research interests, shown on your public faculty dossier." class="form-input" style="resize:vertical;font-family:inherit;"></textarea>
         </div>
         <p id="updateDetailsError" class="form-error-text" style="display:none;color:#ff6b6b;font-size:0.85rem;margin:-0.5rem 0 1rem;"></p>
         <button type="submit" class="btn btn-primary btn-block" id="updateDetailsSubmitBtn">
@@ -1388,7 +1360,7 @@
           </ul>
         </div>
         <div style="text-align: center;">
-          <a href="#criteria-details" class="btn btn-primary" onclick="document.getElementById('portalModal').classList.remove('open');">
+          <a href="#criteria" class="btn btn-primary" onclick="document.getElementById('portalModal').classList.remove('open');">
             <span>Open Achievement Submission Form →</span>
           </a>
         </div>
@@ -1403,14 +1375,9 @@
       <div class="modal-header text-center">
         <div class="success-icon-badge">✓</div>
         <span class="modal-tag">Institutional Queue</span>
-        <h3 class="modal-title" id="successModalTitle">Record Submitted for Review</h3>
-        <p class="modal-subtitle" id="successModalSubtitle">Your achievement record has been cryptographically logged and sent to the HOD review queue.</p>
+        <h3 class="modal-title" id="successModalTitle">Record Submitted</h3>
       </div>
       <div class="modal-body">
-        <div class="submission-ref-box">
-          <span class="ref-label">Reference ID:</span>
-          <span class="ref-value" id="successRefId">FAAEMS-SUB-2026-0001</span>
-        </div>
         <div class="submission-details-table" id="successSummaryTable">
           <!-- Populated dynamically -->
         </div>
@@ -1423,7 +1390,7 @@
     </div>
   </div>
 
-  <!-- GENERIC CONFIRM / ALERT MODAL — replaces native confirm()/alert() popups
+  <!-- GENERIC CONFIRM / ALERT MODAL, replaces native confirm()/alert() popups
        (those show as "localhost:5173 says…", which looks broken once deployed)
        with a styled dialog matching the rest of the site. -->
   <div class="modal-backdrop" id="appConfirmModal">
@@ -1443,7 +1410,7 @@
     </div>
   </div>
 
-  <!-- DELETE ACCOUNT (self-service) — a future last working date only
+  <!-- DELETE ACCOUNT (self-service), a future last working date only
        schedules the departure (everything, including login, stays normal
        until then); today applies immediately. See
        FacultyProfileViewSet.delete_my_account. -->
@@ -1508,7 +1475,7 @@
           </div>
         </div>
 
-        <!-- Circular clock time picker (Android/Material style) — opened by
+        <!-- Circular clock time picker (Android/Material style), opened by
              taskTimeDisplayBtn above. Lives outside the two-column row so
              its backdrop can cover the whole modal. -->
         <div class="clock-picker-backdrop" id="clockPickerBackdrop">
@@ -1560,7 +1527,7 @@
               <option value="recurring_daily">🔁 Daily reminder until completed</option>
             </select>
           </div>
-          <span class="form-hint-cal">This reminder is local to your browser — it does not send a real notification to anyone else.</span>
+          <span class="form-hint-cal">This reminder is local to your browser, it does not send a real notification to anyone else.</span>
         </div>
 
         <!-- Category / Department Tag -->
@@ -1594,18 +1561,19 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="api.js?v=7.2"></script>
-  <script src="app.js?v=17.35"></script>
+  <script src="criterion6_kb.js?v=1.0"></script>
+  <script src="api.js?v=7.6"></script>
+  <script src="app.js?v=17.47"></script>
 
   <!-- Stale-tab guard: this session has repeatedly hit "still broken" reports
        that turned out to be a browser tab left open across a deploy, still
-       running the old app.js from before a fix landed — index.html's own
+       running the old app.js from before a fix landed, index.html's own
        no-cache header doesn't help if the tab is never actually reloaded.
        This polls the live index.html every 60s (cache-busted) and shows an
        unmissable banner the moment the referenced app.js version differs
        from the one this tab loaded, so "did you actually reload?" stops
        being the first troubleshooting question for every report. Deliberately
-       NOT bundled into app.js itself — if app.js is the stale thing, the
+       NOT bundled into app.js itself, if app.js is the stale thing, the
        checker has to keep working regardless. -->
   <script>
     (function () {
@@ -1619,7 +1587,7 @@
         banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#0241cd;color:#fff;' +
           'font-family:system-ui,-apple-system,sans-serif;font-size:14px;padding:10px 16px;display:flex;' +
           'align-items:center;justify-content:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.2);';
-        banner.innerHTML = '<span>A newer version of this site is available — this tab is showing outdated behavior.</span>' +
+        banner.innerHTML = '<span>A newer version of this site is available, this tab is showing outdated behavior.</span>' +
           '<button type="button" style="background:#fff;color:#0241cd;border:none;border-radius:6px;padding:6px 14px;' +
           'font-weight:700;cursor:pointer;font-size:14px;">Refresh Now</button>';
         banner.querySelector('button').addEventListener('click', function () { location.reload(); });
@@ -1635,7 +1603,7 @@
               showUpdateBanner();
             }
           })
-          .catch(function () { /* best-effort — a failed check just tries again next interval */ });
+          .catch(function () { /* best-effort, a failed check just tries again next interval */ });
       }
 
       setInterval(checkForUpdate, 60000);

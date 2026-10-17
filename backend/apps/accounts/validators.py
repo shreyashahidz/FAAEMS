@@ -20,6 +20,38 @@ def validate_institution_email(email: str) -> None:
         raise ValidationError(f"Email must be an institutional address ending in {allowed}.")
 
 
+def email_variants(email: str) -> list[str]:
+    """Every faculty member has an address on both institutional domains
+    (name@tcetmumbai.in and name@thakureducation.org). Returns the same
+    local part on each allowed domain, the typed one first, so an account
+    registered with either address is found by either."""
+    typed = (email or "").strip().lower()
+    local, _, domain = typed.partition("@")
+    domains = [d.lower() for d in settings.ALLOWED_EMAIL_DOMAINS]
+    if not local or domain not in domains:
+        return [typed]
+    return [typed] + [f"{local}@{d}" for d in domains if d != domain]
+
+
+def find_user_by_any_domain(email: str):
+    """The (non-deleted) user whose registered address matches this one on
+    either institutional domain, preferring the exact address typed."""
+    from apps.accounts.models import User
+
+    for candidate in email_variants(email):
+        user = User.objects.filter(email__iexact=candidate, is_deleted=False).first()
+        if user:
+            return user
+    return None
+
+
+def user_email_exists(email: str) -> bool:
+    """True if this person already has an account on either domain."""
+    from apps.accounts.models import User
+
+    return any(User.objects.filter(email__iexact=c).exists() for c in email_variants(email))
+
+
 def role_for_designation(designation):
     """Single source of truth for "does this job title carry department
     review/verification authority": whoever currently holds the HOD
@@ -73,8 +105,8 @@ def validate_hod_slot_available(designation, department, exclude_profile_id=None
     if current_hod:
         raise ValidationError(
             f"{department.name} already has an HOD ({current_hod.full_name}). "
-            "Only one HOD is allowed per department at a time — they need to change "
-            "their own designation first, or contact IQAC to resolve this."
+            "Only one HOD is allowed per department at a time. They need to change "
+            "their own designation first."
         )
 
 

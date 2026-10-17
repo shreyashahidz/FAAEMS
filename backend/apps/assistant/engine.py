@@ -66,7 +66,7 @@ def _answer_criterion_gap(question, user):
     scope = _department_scope(user)
     if scope == "self-only":
         raise AssistantError(
-            "Department-wide gap analysis isn't part of your own data — ask your HOD or IQAC, "
+            "Department-wide gap analysis isn't part of your own data. Ask your HOD or IQAC, "
             "or ask me what's missing from your own profile instead."
         )
 
@@ -131,7 +131,7 @@ def _answer_profile_gap(question, user):
         if scope == "self-only":
             if not own_profile or name_fragment.lower() not in own_profile.full_name.lower():
                 raise AssistantError(
-                    "You can only ask about your own profile — try 'what's missing for my profile'."
+                    "You can only ask about your own profile. Try 'what's missing for my profile'."
                 )
             profiles = FacultyProfile.objects.filter(id=own_profile.id)
         elif scope is not None:

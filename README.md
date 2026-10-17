@@ -11,31 +11,18 @@ docker compose exec backend python manage.py migrate
 docker compose exec backend python manage.py seed_demo
 ```
 
-Open **http://localhost:5173**. Backend API is on **http://localhost:8010** (8000 was already in use by another local project)..
+Open **http://localhost:5173**. Backend API is on **http://localhost:8010** (8000 was already in use by another local project).
 
 Login is restricted to `@tcetmumbai.in` addresses, enforced server-side.
 
-## What's implemented and verified
+## Key Features
 
-Every phase below was tested against the real running stack (not just written) — see `SECURITY_AUDIT.md` for the IDOR/RBAC test log and `DEPLOYMENT.md` for the restore-drill run.
-
-| Phase | Status |
-|---|---|
-| 0 — Project setup | ✅ Postgres + MinIO wired, health check live |
-| 1 — Auth, RBAC, MFA | ✅ Real TOTP MFA, account lockout, captcha, institutional-domain enforcement |
-| 2 — Achievement/evidence model | ✅ Human-readable Evidence IDs, SHA-256 hashing, soft delete, MinIO storage |
-| 3 — Verification workflow | ✅ Full lock/unlock/versioning cycle, mandatory remarks, atomic transactions, audit trail |
-| 4 — Duplicate detection & OCR | ✅ Real Tesseract OCR (PDF + image), confidence scoring, never blocks submission |
-| 5 — Criteria mapping engine | ✅ NBA Criterion 6 seeded from the real SAR table, fully data-driven |
-| 6 — Completeness score & gaps | ✅ Live dashboard rings + per-category breakdown, real DB aggregates |
-| 7 — Report generation | ✅ Real DOCX generator, checksummed snapshots, integrity re-verification |
-| 8 — Search & analytics | ✅ Postgres full-text search (incl. OCR text), Data Quality dashboard |
-| 9 — Notifications | ✅ Event-driven triggers + scheduled expiry/profile scan, in-app bell |
-| 10 — Faculty exit / alumni | ✅ Full 4-step exit workflow, alumni archive view, evidence stays linked |
-| 11 — AI Accreditation Assistant | ✅ Rule-based NL query layer over real endpoints, cites Evidence IDs, refuses out-of-scope |
-| 12 — Security hardening | ✅ Audited — see `SECURITY_AUDIT.md` |
-| 13 — Backup & integrity | ✅ Real encrypted backups + a restore drill that actually ran (and caught a real bug) |
-| 14 — Deployment | 📋 Documented in `DEPLOYMENT.md` — no real college server available to deploy to yet |
+- **Authentication & RBAC:** Institutional email verification and role-based access control (Faculty, HOD, IQAC Admin).
+- **Evidence Management:** Upload and track faculty achievements with document validation, SHA-256 hashing, and MinIO object storage.
+- **OCR & Document Extraction:** Multi-format text extraction (PDF, images, Office documents) with local LLM-assisted analysis.
+- **NBA Criteria Mapping:** Full mapping against NBA Criterion 6, with automated score calculations and gap tracking.
+- **Report Generation & Analytics:** One-click monthly and annual report generation, analytics dashboard, and full-text search.
+- **Data Integrity & Backups:** Scheduled integrity verification, audit logging, and automated encrypted backup/restore tooling.
 
 ## UI
 

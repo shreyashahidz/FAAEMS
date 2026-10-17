@@ -1,5 +1,5 @@
 ﻿/**
- * FAAEMS — Interactive Controller
+ * FAAEMS, Interactive Controller
  * Features:
  * - Theme-reactive sticky header (Dark -> Light Misted Sky Glass -> Dark Deep Hanada)
  * - 3D Card tilt effect on hero platform visual
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function initThemeReactiveHeader() {
   const header = document.getElementById('siteHeader');
   const deptSection = document.getElementById('departments');
-  const hodSection = document.getElementById('hod-section');
+  const hodSection = document.getElementById('leaderboard');
   const navLinks = document.querySelectorAll('.nav-link');
   const sections = document.querySelectorAll('section, footer');
 
@@ -67,7 +67,7 @@ function initThemeReactiveHeader() {
       navLinks.forEach(link => {
         link.classList.remove('active');
         const href = link.getAttribute('href').replace('#', '');
-        if (href === currentId || (currentId === 'departments' && href === 'departments') || (currentId === 'faculties-section' && href === 'faculties')) {
+        if (href === currentId || (currentId === 'departments' && href === 'departments') || (currentId === 'faculties' && href === 'faculties')) {
           link.classList.add('active');
         }
       });
@@ -147,7 +147,7 @@ function initHeroDots() {
     },
     {
       title: 'Verified Evidence<br><span class="campus-headline-highlight">Cryptographic Vault</span>',
-      desc: 'Dual-role HOD verification, immutable certificate storage, and cryptographic duplicate prevention.'
+      desc: 'Immutable certificate storage, and cryptographic duplicate prevention.'
     },
     {
       title: '12 Disciplines<br><span class="campus-headline-highlight">Engineering Leadership</span>',
@@ -211,7 +211,7 @@ function restrictToTenDigits(input) {
 }
 
 // Shared by every department <select> populated from the real API
-// (register, add faculty, update details) — AIML pinned first since it's
+// (register, add faculty, update details), AIML pinned first since it's
 // the department with the fullest real roster right now, the rest
 // alphabetical.
 function sortDepartmentsAimlFirst(depts) {
@@ -227,8 +227,8 @@ function sortDepartmentsAimlFirst(depts) {
    ========================================================================== */
 let activeDepartmentState = {
   key: 'aiml',
-  name: 'B.Tech – Artificial Intelligence & Machine Learning',
-  shortName: 'B.Tech – AI & ML',
+  name: 'B.Tech Artificial Intelligence & Machine Learning',
+  shortName: 'B.Tech AI & ML',
   status: 'Verified',
   rating: 'A++ Grade',
   compliance: 'Exemplary Compliance',
@@ -236,7 +236,7 @@ let activeDepartmentState = {
 };
 
 // Turns a thrown api.js error into one short, human-readable line for a
-// form's error banner — never the raw DRF field-error object. Two things
+// form's error banner, never the raw DRF field-error object. Two things
 // the naive `Object.values(err.data).flat().join(' ')` this replaced got
 // wrong: it included correlation_id (an internal UUID meaningless to a
 // user) verbatim in the message, and a duplicate-registration attempt
@@ -257,7 +257,7 @@ function friendlyErrorMessage(err, fallback) {
   return (err && err.message) || fallback;
 }
 
-// Generic inline form-error toggle — a plain <p class="form-error-text">
+// Generic inline form-error toggle, a plain <p class="form-error-text">
 // next to whichever field/form it belongs to. Promoted to top level (was
 // previously local to initRealAuth()) so any init function can reuse it
 // instead of redefining the same two lines.
@@ -273,7 +273,7 @@ function hideError(el) {
 
 // Mirrors the backend's currently_active_faculty_q() / FacultyProfile.
 // is_currently_active exactly (status must be 'active', and a scheduled
-// exit_date only counts once it's actually in the past) — used purely to
+// exit_date only counts once it's actually in the past), used purely to
 // decide what the dossier UI offers (e.g. the HOD's delete-record
 // override below); the real rule is still enforced server-side regardless
 // of what this returns.
@@ -298,9 +298,9 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
-// Live, purely client-side password strength feedback (no network call —
+// Live, purely client-side password strength feedback (no network call , 
 // unlike a real breach check, this can run on every keystroke without
-// lag or rate-limiting) — informational only, same spirit as Gmail's
+// lag or rate-limiting), informational only, same spirit as Gmail's
 // signup strength meter: it never blocks submission, it just tells the
 // person what it thinks before they hit submit.
 const PASSWORD_STRENGTH_LEVELS = [
@@ -320,9 +320,9 @@ function computePasswordStrength(password) {
   const hasSymbol = /[^A-Za-z0-9]/.test(password);
   const varietyCount = [hasLower, hasUpper, hasDigit, hasSymbol].filter(Boolean).length;
 
-  // The obvious, guessable patterns worth calling out specifically —
+  // The obvious, guessable patterns worth calling out specifically , 
   // "institution name + current year", sequences, repeated characters,
-  // classic filler words — regardless of how they score on length/variety
+  // classic filler words, regardless of how they score on length/variety
   // alone (Tcet@2026 has all four character classes but is still exactly
   // the kind of password a breach list already has).
   const COMMON_PATTERNS = [
@@ -345,7 +345,7 @@ function computePasswordStrength(password) {
   return { score, percent: Math.round(((score + 1) / PASSWORD_STRENGTH_LEVELS.length) * 100), ...PASSWORD_STRENGTH_LEVELS[score] };
 }
 
-// Google-signup-style "Suggest a strong password" — generated client-side,
+// Google-signup-style "Suggest a strong password", generated client-side,
 // guaranteed to land in the top strength band (16 chars, all four
 // character classes, no dictionary/sequence patterns) since it's built
 // from a fixed shape rather than sampled and checked.
@@ -369,7 +369,7 @@ function generateStrongPassword() {
 
 // Local (per-browser) task reminders, surfaced through the SAME
 // notification bell as real backend notifications instead of a separate
-// on-page toast — see fireTaskReminder / renderNotifications. Kept as its
+// on-page toast, see fireTaskReminder / renderNotifications. Kept as its
 // own localStorage list (not folded into academicTasks) since "read" here
 // is a notification-list concept, independent of the task's own
 // completed/pending state in the to-do list.
@@ -387,7 +387,7 @@ function saveLocalNotifications(list) {
   try {
     localStorage.setItem(LOCAL_NOTIFICATIONS_KEY, JSON.stringify(list));
   } catch {
-    // best-effort — storage full/blocked, notification just won't persist
+    // best-effort, storage full/blocked, notification just won't persist
   }
 }
 
@@ -473,7 +473,7 @@ function showToastNotification(message, type = 'info') {
   }, 3500);
 }
 
-// Styled replacements for window.confirm()/alert() — those render as a
+// Styled replacements for window.confirm()/alert(), those render as a
 // bare "localhost:5173 says…" browser chrome dialog, which looks broken
 // once this is deployed on a real domain. Both resolve/return through the
 // same #appConfirmModal markup in index.html; showAppAlert is just
@@ -526,7 +526,7 @@ function showAppAlert(message, options = {}) {
 
 // Plain native <input type="date">, constrained with min/max so the
 // browser's own calendar picker won't offer out-of-range dates in the
-// first place — the exact day-level cutoff (e.g. "at least 18 years old")
+// first place, the exact day-level cutoff (e.g. "at least 18 years old")
 // is still enforced server-side regardless, this is just the UI hint.
 function initDateInputBounds(inputId, { minYear, maxYear, maxToday = false } = {}) {
   const input = document.getElementById(inputId);
@@ -539,7 +539,7 @@ function initDateInputBounds(inputId, { minYear, maxYear, maxToday = false } = {
   }
 }
 
-// Personal task list — local to this browser only (localStorage), separate
+// Personal task list, local to this browser only (localStorage), separate
 // from the real backend-driven notification bell (achievement submissions,
 // corrections, etc.). Nothing here is shared with anyone else or synced.
 function initCalendarAndTodoList() {
@@ -570,7 +570,7 @@ function initCalendarAndTodoList() {
   const taskNotesInput = document.getElementById('taskInputNotes');
   const catPills = document.querySelectorAll('#taskCategoryPills .cat-pill');
 
-  // Circular (Android/Material-style) clock time picker — a plain
+  // Circular (Android/Material-style) clock time picker, a plain
   // <input type="time"> and an hour/minute <select> pair both got
   // rejected in favor of an actual clickable clock face, so this builds
   // one out of SVG: 12 numbers positioned around a circle (hour mode
@@ -591,7 +591,7 @@ function initCalendarAndTodoList() {
 
   const CLOCK_CENTER = 110;
   const CLOCK_RADIUS = 82;
-  // Clock face state, only committed to #taskInputTime on "OK" — Cancel
+  // Clock face state, only committed to #taskInputTime on "OK", Cancel
   // (or the backdrop) discards it and leaves the previously saved time
   // alone, same as Android's picker.
   const clockState = { hour12: 10, minute: 0, isPM: false, mode: 'hour' };
@@ -734,7 +734,7 @@ function initCalendarAndTodoList() {
   const toDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const todayStr = toDateStr(now);
 
-  // Calendar State — defaults to the real current month/day, not a fixed date.
+  // Calendar State, defaults to the real current month/day, not a fixed date.
   let calendarYear = now.getFullYear();
   let calendarMonth = now.getMonth();
   let selectedDateStr = todayStr;
@@ -751,7 +751,7 @@ function initCalendarAndTodoList() {
     return copy;
   }
 
-  // Default seed tasks (shown once, before the visitor adds their own) —
+  // Default seed tasks (shown once, before the visitor adds their own) , 
   // dated relative to today so they never look stale.
   let academicTasks = [
     {
@@ -1007,10 +1007,10 @@ function initCalendarAndTodoList() {
     if (taskNotesInput) taskNotesInput.value = '';
     // .modal-backdrop is display:flex/opacity:0/pointer-events:none by
     // default and only becomes visible+clickable via the .open class (see
-    // styles.css) — every other modal in the app toggles .open for exactly
+    // styles.css), every other modal in the app toggles .open for exactly
     // this reason. Setting style.display here directly used to leave
     // opacity/pointer-events untouched, so the modal was technically
-    // "open" but invisible and unclickable — clicking "Add Task" looked
+    // "open" but invisible and unclickable, clicking "Add Task" looked
     // like it silently did nothing.
     taskModal.classList.add('open');
     if (taskTitleInput) setTimeout(() => taskTitleInput.focus(), 100);
@@ -1118,10 +1118,10 @@ function initCalendarAndTodoList() {
   updateSelectedDateSummary();
   renderTodoList();
 
-  // Local reminders — the task form offers rich "🔔 30 minutes before" /
+  // Local reminders, the task form offers rich "🔔 30 minutes before" /
   // "🔁 Every 15 minutes" alert options, which is a real promise to the
   // person filling it in even though the form's own fine-print says this
-  // list "does not send a real notification to anyone else" (true — it's
+  // list "does not send a real notification to anyone else" (true, it's
   // not routed through the backend notification bell, which is per-user
   // server data this purely-local list was never part of). Never actually
   // firing anything at the chosen time made that promise false; this
@@ -1143,7 +1143,7 @@ function initCalendarAndTodoList() {
     // date/time they can already see on the task itself.
     const message = task.notes && task.notes.trim()
       ? task.notes.trim()
-      : `${task.category || 'Task'} — ${formatReadableDate(task.date)} at ${task.time}`;
+      : `${task.category || 'Task'}: ${formatReadableDate(task.date)} at ${task.time}`;
     addLocalNotification(title, message);
     try {
       if (window.Notification && Notification.permission === 'granted') {
@@ -1152,7 +1152,7 @@ function initCalendarAndTodoList() {
         Notification.requestPermission();
       }
     } catch {
-      // Notification API unsupported or blocked by the browser — the
+      // Notification API unsupported or blocked by the browser, the
       // bell-icon notification above already covers it, this is a bonus.
     }
   }
@@ -1198,13 +1198,13 @@ function initCalendarAndTodoList() {
 /* ==========================================================================
    6. HOD Cards Directory (11 College Department HODs & Live Gauge Sync & Search)
    ========================================================================== */
-// Real, dynamic ranking by verified-achievement count — no placeholder
+// Real, dynamic ranking by verified-achievement count, no placeholder
 // data. Fetched fresh on every page load (see buildRealSubmissionConfig's
 // caller in the bootstrap); ranking naturally shifts day to day as more
 // submissions get verified.
 // Pins the leaderboard column's height to match the calendar column's
 // actual rendered height, so neither ever shows a blank gap under a
-// shorter card while the other keeps going — CSS Grid stretch alone
+// shorter card while the other keeps going, CSS Grid stretch alone
 // doesn't reliably do this across an auto-height row (see the CSS comment
 // on .lb-scroll-wrapper), so it's measured directly instead.
 function syncLeaderboardHeight() {
@@ -1212,8 +1212,8 @@ function syncLeaderboardHeight() {
   const calendarContainer = document.getElementById('calendarTodoContainer');
   if (!leaderboardWrapper || !calendarContainer) return;
   // Below the tablet/mobile breakpoint (.capabilities-row-layout collapses
-  // to a single column at max-width: 1024px — see styles.css) the two
-  // columns stack vertically instead of sitting side by side — forcing a
+  // to a single column at max-width: 1024px, see styles.css) the two
+  // columns stack vertically instead of sitting side by side, forcing a
   // fixed height there would just clip content, so only pin it above that
   // width, matching the same breakpoint the CSS uses.
   if (window.innerWidth <= 1024) {
@@ -1232,6 +1232,14 @@ window.addEventListener('resize', () => {
   _leaderboardHeightResizeTimer = setTimeout(syncLeaderboardHeight, 150);
 });
 
+// Academic year runs 1 June - 31 May: A.Y. 2026-2027 = June 2026 .. May 2027.
+// Derived from today's date so the site rolls over to the new year by itself.
+function currentAcademicYearLabel() {
+  const now = new Date();
+  const start = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear() - 1;
+  return `${start}-${start + 1}`;
+}
+
 function initLeaderboard() {
   const rowsContainer = document.getElementById('leaderboardRowsContainer');
   const loadingState = document.getElementById('leaderboardLoadingState');
@@ -1245,6 +1253,9 @@ function initLeaderboard() {
 
   let entries = [];
   let currentFilter = 'all';
+  let years = [];
+  let currentYear = null; // what the dropdown shows
+  let yearPickedByUser = false; // until someone picks a year, always follow the server's current academic year
 
   function rankBadgeClass(rank) {
     if (rank === 1) return ' lb-rank-1';
@@ -1279,7 +1290,7 @@ function initLeaderboard() {
     if (noResultsBox) noResultsBox.style.display = 'none';
 
     rowsContainer.innerHTML = filtered.map(entry => {
-      const pct = entry.submitted_count > 0 ? Math.round((entry.verified_count / entry.submitted_count) * 100) : 0;
+      const pct = entry.criteria_total > 0 ? Math.round((entry.criteria_filled / entry.criteria_total) * 100) : 0;
       return `
         <div class="lb-row">
           <div class="lb-row-top">
@@ -1288,11 +1299,11 @@ function initLeaderboard() {
               <div class="lb-row-name">${escapeHtml(entry.full_name)}</div>
               <div class="lb-row-sub">${escapeHtml(entry.designation)} · ${escapeHtml(entry.department_name)}</div>
             </div>
-            <div class="lb-row-metric"><span class="lb-metric-num">${entry.verified_count}</span> verified</div>
+            <div class="lb-row-metric"><span class="lb-metric-num">${entry.criteria_filled}</span> criteria filled</div>
           </div>
           <div class="lb-row-bottom">
             <div class="lb-progress-track"><div class="lb-progress-fill" style="width:${pct}%;"></div></div>
-            <span class="lb-progress-frac">${entry.verified_count}/${entry.submitted_count} (${pct}%)</span>
+            <span class="lb-progress-frac">${entry.criteria_filled}/${entry.criteria_total} (${pct}%)</span>
           </div>
         </div>
       `;
@@ -1303,14 +1314,27 @@ function initLeaderboard() {
     if (!filterBar) return;
     const seen = new Map();
     entries.forEach(e => { if (!seen.has(e.department_code)) seen.set(e.department_code, e.department_name); });
-    const pills = ['<button type="button" class="hod-filter-btn active" data-lb-filter="all">All Departments</button>'];
+    const pills = [`<button type="button" class="hod-filter-btn${currentFilter === 'all' ? ' active' : ''}" data-lb-filter="all">All Departments</button>`];
     seen.forEach((name, code) => {
-      pills.push(`<button type="button" class="hod-filter-btn" data-lb-filter="${code}">${escapeHtml(name)}</button>`);
+      pills.push(`<button type="button" class="hod-filter-btn${currentFilter === code ? ' active' : ''}" data-lb-filter="${code}">${escapeHtml(name)}</button>`);
     });
+    // Scores are "criteria filled in the chosen academic year".
+    const yearOptions = years.map(y => `<option value="${escapeHtml(y)}"${y === currentYear ? ' selected' : ''}>${escapeHtml(y)}</option>`)
+      .concat(['<option value="all">All Years</option>']);
+    pills.push(`<select id="lbYearSelect" class="hod-filter-btn lb-year-select" aria-label="Academic year">${yearOptions.join('')}</select>`);
     filterBar.innerHTML = pills.join('');
-    filterBar.querySelectorAll('.hod-filter-btn').forEach(btn => {
+    const yearSelect = document.getElementById('lbYearSelect');
+    if (yearSelect) {
+      if (currentYear === 'all') yearSelect.value = 'all';
+      yearSelect.addEventListener('change', () => {
+        currentYear = yearSelect.value;
+        yearPickedByUser = true;
+        loadLeaderboard();
+      });
+    }
+    filterBar.querySelectorAll('button.hod-filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        filterBar.querySelectorAll('.hod-filter-btn').forEach(b => b.classList.remove('active'));
+        filterBar.querySelectorAll('button.hod-filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentFilter = btn.getAttribute('data-lb-filter') || 'all';
         renderRows();
@@ -1337,41 +1361,45 @@ function initLeaderboard() {
   }
 
   function loadLeaderboard() {
-    window.FaemsAPI.getLeaderboard().then(res => {
+    window.FaemsAPI.getLeaderboard(yearPickedByUser ? currentYear : null).then(res => {
       entries = res.results || res;
+      years = res.years || [];
+      // Not picked by hand: keep following the server's current academic year,
+      // so the board moves on by itself when a new year starts.
+      if (!yearPickedByUser) currentYear = res.current_year || res.year || 'all';
       if (loadingState) loadingState.remove();
       buildDepartmentFilters();
       renderRows();
       syncLeaderboardHeight();
     }).catch(() => {
-      if (loadingState) loadingState.textContent = "Couldn't load the leaderboard — please refresh.";
+      if (loadingState) loadingState.textContent = "Couldn't load the leaderboard, please refresh.";
     });
   }
 
   loadLeaderboard();
   // The initial attempt above runs before login-gate unlock resolves for a
   // brand-new visitor (no saved session yet), so it 401s silently behind
-  // the still-hidden page — refresh once real auth actually completes.
+  // the still-hidden page, refresh once real auth actually completes.
   document.addEventListener('faems:authenticated', loadLeaderboard);
   // Submitting/verifying/deleting an achievement from the dossier changes
-  // the verified/submitted counts this ranking is built from.
+  // the criteria counts this ranking is built from.
   document.addEventListener('faems:achievementsChanged', loadLeaderboard);
   document.addEventListener('faems:facultyStatusChanged', loadLeaderboard);
   // A faculty member editing their own name/designation/department in
   // "Update Details" should reflect here immediately too, not just after a
   // reload or a fresh login elsewhere.
   document.addEventListener('faems:facultyProfileUpdated', loadLeaderboard);
-  // Every event above only fires in the SAME tab that made the change —
+  // Every event above only fires in the SAME tab that made the change , 
   // someone verifying/deleting a submission in one tab has no way to tell
   // a different tab (e.g. an HOD open elsewhere) anything happened. This
   // is the same gap the stale-tab banner covers for deployed code changes,
-  // just for live data instead — a plain poll is simpler than wiring up
+  // just for live data instead, a plain poll is simpler than wiring up
   // real-time push for what's still a small user base.
   setInterval(loadLeaderboard, 30000);
 }
 
 /* ==========================================================================
-   7. Instant Faculty Search & Carousel Controller — real AI & ML roster,
+   7. Instant Faculty Search & Carousel Controller, real AI & ML roster,
    fetched live so a new self-registration or a profile edit shows up here
    without ever touching this file again.
    ========================================================================== */
@@ -1387,7 +1415,7 @@ function designationLabel(raw) {
   return labels[raw] || (raw || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
-// Institutional email — every "local part + domain picker" field across
+// Institutional email, every "local part + domain picker" field across
 // the app (login, register, forgot-password, Add Faculty) only ever holds
 // the local part in its own text input; the domain comes from a picker
 // beside it (the institution issues real accounts on more than one
@@ -1398,17 +1426,17 @@ function emailDomainSuffix(domainSelectEl) {
   return '@' + (domainSelectEl ? domainSelectEl.value : 'tcetmumbai.in');
 }
 // Browser autofill (or a saved credential from before the domain picker
-// existed) can drop a *full* email — local part and domain together —
+// existed) can drop a *full* email, local part and domain together , 
 // into a field that's only ever supposed to hold the local part. The
 // "strip @ as you type" listeners on each form don't catch that, since
-// autofill doesn't reliably fire a normal input event — so this is used
+// autofill doesn't reliably fire a normal input event, so this is used
 // again right before composing the submitted email, as a last line of
 // defense against silently submitting "name@domain@domain".
 function localPartOnly(value) {
   return (value || '').split('@')[0].trim();
 }
 
-// "YYYY-MM-DD" for *today* in the browser's own local timezone — matches
+// "YYYY-MM-DD" for *today* in the browser's own local timezone, matches
 // what a native <input type="date"> reads/writes, so a straight string
 // comparison against it (e.g. "is this date today or in the future?")
 // works without parsing either side back into a Date object. Top-level
@@ -1439,7 +1467,7 @@ function buildFacultyCardHTML(fp, index) {
         <h3 class="card-title">${name}</h3>
         <span class="card-designation">${designation}</span>
         <div class="card-meta-chips">
-          <span class="meta-chip">Emp ID: ${escapeHtml(fp.employee_id || '—')}</span>
+          <span class="meta-chip">Emp ID: ${escapeHtml(fp.employee_id || 'Not set')}</span>
           <span class="meta-chip chip-verified">Verified ✓</span>
         </div>
         <p class="card-summary">${summary}</p>
@@ -1452,23 +1480,23 @@ function buildFacultyCardHTML(fp, index) {
   `;
 }
 
-// HOD-only "Non-active" roster card — deliberately reuses the same class
+// HOD-only "Non-active" roster card, deliberately reuses the same class
 // names/data attributes as buildFacultyCardHTML's active card
 // (.carousel-card, .card-title, .card-designation, .card-summary,
 // .meta-chip, .card-read-more[data-faculty-id]) so the existing
 // document-level delegated click handler and getFacultyData()'s DOM
 // scrape (both in initFacultyDossierModal) work on it completely
-// unchanged — opening a non-active faculty's dossier is the same click
+// unchanged, opening a non-active faculty's dossier is the same click
 // handler as an active one, just reading a differently-styled card.
 function buildNonActiveFacultyCardHTML(fp, departmentCode) {
   const name = escapeHtml(fp.full_name);
   const designation = escapeHtml(designationLabel(fp.designation));
-  const period = `${fp.join_date || 'Unknown'} – ${fp.exit_date || 'Unknown'}`;
+  const period = `${fp.join_date || 'Unknown'} to ${fp.exit_date || 'Unknown'}`;
   return `
     <div class="carousel-card non-active-faculty-card" data-faculty-id="${fp.id}" data-department-code="${escapeHtml(departmentCode || '')}">
       <h3 class="card-title naf-name">${name}</h3>
       <span class="card-designation" style="display:none;">${designation}</span>
-      <div class="naf-meta">${designation}<br>Emp ID: ${escapeHtml(fp.employee_id || '—')}<br>Active: ${escapeHtml(period)}</div>
+      <div class="naf-meta">${designation}<br>Emp ID: ${escapeHtml(fp.employee_id || 'Not set')}<br>Active: ${escapeHtml(period)}</div>
       <span class="naf-badge">Non-active</span>
       <p class="card-summary" style="display:none;"></p>
       <button class="card-read-more" data-faculty-id="${fp.id}" style="margin-top:0.75rem;">
@@ -1528,7 +1556,7 @@ function initFacultySearchAndCarousel() {
 
   function getVisibleCards() {
     // Measured from the actual rendered card/viewport size rather than
-    // hardcoded width breakpoints — a mismatch between an assumed card
+    // hardcoded width breakpoints, a mismatch between an assumed card
     // count and the real CSS card width was letting maxIndex overshoot
     // how many "next" clicks it actually takes to reach the last card(s),
     // leaving them reachable only via search, never via the arrows/dots.
@@ -1613,27 +1641,27 @@ function initFacultySearchAndCarousel() {
       updateCarousel();
       document.dispatchEvent(new CustomEvent('faems:facultyDirectoryLoaded'));
     }).catch(() => {
-      track.innerHTML = '<p class="carousel-loading-text">Couldn\'t load the faculty directory — please refresh.</p>';
+      track.innerHTML = '<p class="carousel-loading-text">Couldn\'t load the faculty directory, please refresh.</p>';
     });
   }
 
   loadFacultyDirectory();
   // Same reasoning as the leaderboard: a brand-new visitor's first attempt
   // runs before the login gate unlocks, so it 401s behind the still-hidden
-  // page — refresh once real auth actually completes.
+  // page, refresh once real auth actually completes.
   document.addEventListener('faems:authenticated', loadFacultyDirectory);
   // Marking someone as exited (from their own dossier) both endpoints
   // already filter to active faculty only, so the directory needs a
   // refetch too, not just the leaderboard.
   document.addEventListener('faems:facultyStatusChanged', loadFacultyDirectory);
   // Re-render the directory cards (name, designation, department badge)
-  // right after any self-edit via "Update Details" — getFacultyData() in
+  // right after any self-edit via "Update Details", getFacultyData() in
   // the dossier below scrapes these cards' own DOM, so this refetch is
   // also what keeps a freshly reopened dossier from showing stale text.
   document.addEventListener('faems:facultyProfileUpdated', loadFacultyDirectory);
 
   // HOD-only Active/Non-active roster toggle. Plain faculty and IQAC/
-  // Super Admin never see this at all — Non-active is specifically the
+  // Super Admin never see this at all, Non-active is specifically the
   // HOD's own-department "who's left" view (name/employee ID/time period
   // + every achievement they ever submitted, never deleted), not a
   // general admin archive.
@@ -1656,12 +1684,17 @@ function initFacultySearchAndCarousel() {
   const nbaReportViewBtn = document.getElementById('nbaReportViewBtn');
   const nbaReportDownloadBtn = document.getElementById('nbaReportDownloadBtn');
   const nbaReportBackBtn = document.getElementById('nbaReportBackBtn');
-  const nbaReportPreviewWrap = document.getElementById('nbaReportPreviewWrap');
-  const nbaReportPreviewFrame = document.getElementById('nbaReportPreviewFrame');
-  const nbaReportPreviewBackBtn = document.getElementById('nbaReportPreviewBackBtn');
+  const reportPage = document.getElementById('reportPage');
+  const reportPageBackBtn = document.getElementById('reportPageBackBtn');
+  const navReportLink = document.getElementById('navReportLink');
+  const reportViewer = document.getElementById('reportViewer');
+  const reportViewerFrame = document.getElementById('reportViewerFrame');
+  const reportViewerTitle = document.getElementById('reportViewerTitle');
+  const reportViewerBackBtn = document.getElementById('reportViewerBackBtn');
+  const reportViewerDownloadBtn = document.getElementById('reportViewerDownloadBtn');
   // Holds the most recently generated report's blob URL + filename so View
   // and Download (and a later click of either) can both reuse it instead
-  // of re-fetching — revoked whenever a new report replaces it or the
+  // of re-fetching, revoked whenever a new report replaces it or the
   // modal is reset, so a tab's worth of these don't leak.
   let nbaReportBlobState = null;
 
@@ -1672,14 +1705,30 @@ function initFacultySearchAndCarousel() {
     }
     if (nbaReportForm) nbaReportForm.style.display = '';
     if (nbaReportResult) nbaReportResult.style.display = 'none';
-    if (nbaReportPreviewWrap) nbaReportPreviewWrap.style.display = 'none';
-    if (nbaReportPreviewFrame) nbaReportPreviewFrame.src = 'about:blank';
+    closeReportViewer();
+  }
+
+  function closeReportViewer() {
+    if (reportViewer) reportViewer.classList.remove('open');
+    if (reportViewerFrame) reportViewerFrame.src = 'about:blank';
+  }
+
+  function openReportPage() {
+    if (reportPage) { reportPage.classList.add('open'); reportPage.setAttribute('aria-hidden', 'false'); }
+  }
+
+  function closeReportPage() {
+    if (reportPage) { reportPage.classList.remove('open'); reportPage.setAttribute('aria-hidden', 'true'); }
+    if (nbaReportModal) nbaReportModal.classList.remove('open');
+    closeReportViewer();
   }
 
   function updateRosterToggleVisibility() {
     const user = window.FAEMS_CURRENT_USER;
     if (rosterToggleWrap) rosterToggleWrap.style.display = user && user.role === 'hod' ? '' : 'none';
-    if (generateNbaReportBtn) generateNbaReportBtn.style.display = user && user.role === 'hod' ? '' : 'none';
+    // The Report link (and the page behind it) exists for the HOD only.
+    if (navReportLink) navReportLink.style.display = user && user.role === 'hod' ? '' : 'none';
+    if (user && user.role !== 'hod') closeReportPage();
   }
   updateRosterToggleVisibility();
   document.addEventListener('faems:authenticated', updateRosterToggleVisibility);
@@ -1749,29 +1798,37 @@ function initFacultySearchAndCarousel() {
   if (nbaReportViewBtn) {
     nbaReportViewBtn.addEventListener('click', () => {
       if (!nbaReportBlobState) return;
-      if (nbaReportPreviewFrame) nbaReportPreviewFrame.src = nbaReportBlobState.url;
-      if (nbaReportResult) nbaReportResult.style.display = 'none';
-      if (nbaReportPreviewWrap) nbaReportPreviewWrap.style.display = '';
+      // Full-page viewer (not a small box inside the pop-up); the Back
+      // button returns to the pop-up / report page it came from.
+      if (reportViewerTitle) reportViewerTitle.textContent = `Report: ${nbaReportResultLabel ? nbaReportResultLabel.textContent : ''}`;
+      if (reportViewerFrame) reportViewerFrame.src = nbaReportBlobState.url;
+      if (reportViewer) { reportViewer.classList.add('open'); reportViewer.setAttribute('aria-hidden', 'false'); }
     });
   }
-  if (nbaReportPreviewBackBtn) {
-    nbaReportPreviewBackBtn.addEventListener('click', () => {
-      if (nbaReportPreviewWrap) nbaReportPreviewWrap.style.display = 'none';
-      if (nbaReportPreviewFrame) nbaReportPreviewFrame.src = 'about:blank';
-      if (nbaReportResult) nbaReportResult.style.display = '';
+  const downloadCurrentReport = () => {
+    if (!nbaReportBlobState) return;
+    const link = document.createElement('a');
+    link.href = nbaReportBlobState.url;
+    link.download = nbaReportBlobState.filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+  if (reportViewerBackBtn) reportViewerBackBtn.addEventListener('click', closeReportViewer);
+  if (reportViewerDownloadBtn) reportViewerDownloadBtn.addEventListener('click', downloadCurrentReport);
+  if (reportPageBackBtn) reportPageBackBtn.addEventListener('click', closeReportPage);
+  if (navReportLink) {
+    navReportLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      openReportPage();
     });
   }
-  if (nbaReportDownloadBtn) {
-    nbaReportDownloadBtn.addEventListener('click', () => {
-      if (!nbaReportBlobState) return;
-      const link = document.createElement('a');
-      link.href = nbaReportBlobState.url;
-      link.download = nbaReportBlobState.filename;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    });
-  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (reportViewer && reportViewer.classList.contains('open')) closeReportViewer();
+    else if (reportPage && reportPage.classList.contains('open') && !(nbaReportModal && nbaReportModal.classList.contains('open'))) closeReportPage();
+  });
+  if (nbaReportDownloadBtn) nbaReportDownloadBtn.addEventListener('click', downloadCurrentReport);
   if (nbaReportBackBtn) {
     nbaReportBackBtn.addEventListener('click', () => resetNbaReportModal());
   }
@@ -1786,12 +1843,12 @@ function initFacultySearchAndCarousel() {
         ? entries.map(fp => buildNonActiveFacultyCardHTML(fp, departmentCode)).join('')
         : '<p class="carousel-loading-text">No non-active faculty on record.</p>';
     }).catch(() => {
-      nonActiveGrid.innerHTML = '<p class="carousel-loading-text">Couldn\'t load the non-active roster — please try again.</p>';
+      nonActiveGrid.innerHTML = '<p class="carousel-loading-text">Couldn\'t load the non-active roster, please try again.</p>';
     });
   }
 
   // Delegated (grid content is rebuilt on every loadNonActiveRoster()
-  // call) — the "Delete Data" button on a Non-active card permanently
+  // call), the "Delete Data" button on a Non-active card permanently
   // removes that account AND every achievement/evidence record, even
   // with real history (unlike every other delete path in this app). No
   // undo, so this needs its own explicit, named confirmation rather than
@@ -1802,7 +1859,7 @@ function initFacultySearchAndCarousel() {
     const facId = btn.getAttribute('data-purge-faculty-id');
     const facName = btn.getAttribute('data-purge-faculty-name') || 'this faculty member';
     const confirmed = await showAppConfirm(
-      `Permanently delete ALL data for ${facName}? This removes their account and every achievement/evidence record they ever submitted — unlike a normal deletion, none of it is kept for institutional record. This cannot be undone.`,
+      `Permanently delete ALL data for ${facName}? This removes their account and every achievement/evidence record they ever submitted, unlike a normal deletion, none of it is kept for institutional record. This cannot be undone.`,
       { danger: true, okText: 'Delete Everything', title: 'Permanently Delete Data' }
     );
     if (!confirmed) return;
@@ -1850,8 +1907,8 @@ function initFacultyDossierModal() {
   const facultyDossiers = {};
 
   // Builds a dossier from the faculty card's own real, published profile
-  // info — real qualification/experience text and real employee ID, both
-  // already shown on the card — rather than inventing achievement records
+  // info, real qualification/experience text and real employee ID, both
+  // already shown on the card, rather than inventing achievement records
   // that haven't actually been submitted and verified yet.
   function getFacultyData(id) {
     if (facultyDossiers[id]) return facultyDossiers[id];
@@ -1883,7 +1940,7 @@ function initFacultyDossierModal() {
 
   // A self-edit via "Update Details" invalidates this cached dossier (it
   // was built from the directory card's DOM, which faems:facultyProfileUpdated
-  // also refreshes elsewhere) — drop it so the next open re-scrapes fresh
+  // also refreshes elsewhere), drop it so the next open re-scrapes fresh
   // data, and re-render immediately if that faculty's dossier is open right now.
   document.addEventListener('faems:facultyProfileUpdated', (e) => {
     const id = e.detail && e.detail.facultyProfileId;
@@ -1905,11 +1962,11 @@ function initFacultyDossierModal() {
   function achievementStatusLabel(status) {
     const labels = {
       draft: 'Draft',
-      submitted: 'Submitted — Pending Review',
+      submitted: 'Submitted',
       hod_review: 'Pending HOD Review',
       corrections_required: 'Corrections Required',
       resubmitted: 'Resubmitted',
-      verified: 'Verified ✓',
+      verified: 'Submitted ✓',
       iqac_locked: 'IQAC Locked ✓',
       rejected: 'Rejected',
     };
@@ -1929,10 +1986,10 @@ function initFacultyDossierModal() {
   }
 
   // Evidence files are streamed through an authenticated backend proxy
-  // (never a raw MinIO URL — see EvidenceDocumentViewSet.download), so
+  // (never a raw MinIO URL, see EvidenceDocumentViewSet.download), so
   // opening one needs the bearer token attached the way a plain <a href>
   // navigation never would. The tab is opened synchronously, before the
-  // first await, and redirected once the blob is ready — opening it only
+  // first await, and redirected once the blob is ready, opening it only
   // after the fetch/blob work (i.e. after an await) is what popup blockers
   // treat as no longer a direct user gesture, and silently block it.
   async function openEvidenceFile(url, filename, download) {
@@ -1953,7 +2010,7 @@ function initFacultyDossierModal() {
       } else if (newTab) {
         // Navigating the tab straight to the blob: URL (newTab.location.href
         // = blobUrl) works, but the tab then has no <title> of its own, so
-        // the browser falls back to showing the raw blob UUID in the tab —
+        // the browser falls back to showing the raw blob UUID in the tab , 
         // looks exactly like something went wrong even though the preview
         // itself is fine. Wrapping it in a real HTML document with a
         // <title> fixes that; <embed> is what actually gets the browser's
@@ -1983,14 +2040,14 @@ function initFacultyDossierModal() {
       setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
     } catch {
       if (newTab) newTab.close();
-      await showAppAlert("Couldn't open this file — please try again.");
+      await showAppAlert("Couldn't open this file, please try again.");
     }
   }
 
   // Everything now lives on the one Profile & Metrics view: the (editable,
   // own-profile) description, a plain-language submitted-so-far summary,
   // and one row per achievement with a ⋮ menu for add-attachment / delete /
-  // download — replacing the earlier separate Criterion 6.1 / 6.2 /
+  // download, replacing the earlier separate Criterion 6.1 / 6.2 /
   // Evidence Vault tabs.
   function renderAchievementsSection(achievements, isOwnProfile, isReviewer, isFacultyNonActive) {
     const total = achievements.length;
@@ -1998,8 +2055,8 @@ function initFacultyDossierModal() {
       ? `<strong>${total}</strong> achievement${total === 1 ? '' : 's'} submitted so far.`
       : '';
 
-    // Every distinct year range this faculty has actually submitted under —
-    // including one just created via "+ Add Year" in the wizard — so a new
+    // Every distinct year range this faculty has actually submitted under , 
+    // including one just created via "+ Add Year" in the wizard, so a new
     // year shows up here (own dossier and the HOD's review of them) with no
     // extra wiring: it's driven entirely by what's really in the data.
     const years = Array.from(new Set(achievements.map(a => a.cycle_label).filter(Boolean)))
@@ -2010,7 +2067,7 @@ function initFacultyDossierModal() {
         ${years.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('')}
       </select>` : '';
 
-    // criterion_path only ever carries descriptions (never codes — see
+    // criterion_path only ever carries descriptions (never codes, see
     // AchievementSerializer.get_criterion_path), so the "6.1"/"6.2" prefix
     // faculty actually recognize comes from matching that description
     // against the same live criteria config the submission wizard already
@@ -2021,7 +2078,7 @@ function initFacultyDossierModal() {
 
     function criterionHeading(title) {
       const code = codeByTitle[title];
-      return code ? `${code} — ${title}` : title;
+      return code ? `${code}: ${title}` : title;
     }
 
     // Every distinct top-level criterion actually present, so the filter
@@ -2038,23 +2095,22 @@ function initFacultyDossierModal() {
       const isLocked = a.status === 'iqac_locked';
       const canAddEvidence = isOwnProfile && !isLocked;
       // A faculty member can add/remove their own attachment(s), or delete
-      // the whole submission, at any point — including after HOD has
-      // verified it — right up until IQAC locks it in as the institutional
+      // the whole submission, at any point, including after HOD has
+      // verified it, right up until IQAC locks it in as the institutional
       // record. A reviewer (this faculty's own HOD, or IQAC/Super Admin)
       // gets that same power, but only once this faculty member has gone
       // non-active and can no longer log in to clean up their own dossier
-      // — matches can_manage_non_active_faculty_record server-side.
+      //, matches can_manage_non_active_faculty_record server-side.
       const canManageAsNonActive = isReviewer && isFacultyNonActive;
       const canDeleteAttachment = (isOwnProfile || canManageAsNonActive) && !isLocked;
       const canDeleteAchievement = (isOwnProfile || canManageAsNonActive) && !isLocked;
-      const canVerify = isReviewer && ['submitted', 'resubmitted'].includes(a.status);
 
       const menuItems = [];
       if (canAddEvidence) menuItems.push(`<label class="dossier-menu-item" style="cursor:pointer;">Add Attachment<input type="file" data-action="add-evidence" data-achievement-id="${a.id}" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.csv" style="display:none;"></label>`);
       if (canDeleteAchievement) menuItems.push(`<button type="button" class="dossier-menu-item dossier-menu-item-danger" data-action="delete-achievement" data-achievement-id="${a.id}">Delete Submission</button>`);
 
-      // Each attachment gets its own download/delete — not just the
-      // latest one — so with two or more files on the same submission,
+      // Each attachment gets its own download/delete, not just the
+      // latest one, so with two or more files on the same submission,
       // any single one of them can be removed without touching the rest.
       const attachmentsHtml = docs.length ? `
         <div class="dossier-attachment-list">
@@ -2080,7 +2136,6 @@ function initFacultyDossierModal() {
             <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
               <strong>${escapeHtml(a.title)}</strong>
               <div class="dossier-row-actions">
-                ${canVerify ? `<button type="button" class="btn btn-primary dossier-action-btn" data-action="verify-achievement" data-achievement-id="${a.id}">Verify</button>` : ''}
                 ${menuItems.length ? `
                 <div class="dossier-menu-wrap">
                   <button type="button" class="dossier-menu-trigger" data-action="toggle-menu" aria-label="More actions">⋮</button>
@@ -2101,7 +2156,7 @@ function initFacultyDossierModal() {
       `;
     }
 
-    // Group by top-level criterion (6.1 / 6.2 / …) — the earlier flat list
+    // Group by top-level criterion (6.1 / 6.2 / …), the earlier flat list
     // with a one-line "X under Y" summary was harder to scan than seeing
     // each criterion's own submissions listed under it directly.
     const groups = new Map();
@@ -2135,11 +2190,11 @@ function initFacultyDossierModal() {
 
     // Own-profile: full read/write access (add attachments, delete a draft,
     // download). Reviewer (the faculty's own HOD, or IQAC/Super Admin):
-    // read + verify on someone else's record — same RBAC the review
+    // read + verify on someone else's record, same RBAC the review
     // workflow already enforces server-side; this just decides what the
     // dossier UI offers.
     const currentUser = window.FAEMS_CURRENT_USER;
-    // Compare real faculty_profile_id, not display names — a name-string
+    // Compare real faculty_profile_id, not display names, a name-string
     // match is one stale re-render or formatting difference away from
     // silently hiding a faculty member's own Add/Update/Delete/Download
     // controls on their own dossier.
@@ -2152,7 +2207,7 @@ function initFacultyDossierModal() {
     const canSeeAchievements = isOwnProfile || isReviewer;
 
     // Real status from the server, not the DOM-scraped getFacultyData()
-    // (whose `status` field is a hardcoded placeholder) — only matters for
+    // (whose `status` field is a hardcoded placeholder), only matters for
     // a reviewer, so skip the extra request on a faculty member's own
     // dossier. Drives the HOD's "clean up a departed faculty member's
     // dossier" override below; falls back to "not non-active" on error,
@@ -2162,11 +2217,11 @@ function initFacultyDossierModal() {
       try {
         const profile = await window.FaemsAPI.getFacultyProfile(facId);
         isFacultyNonActive = !isProfileCurrentlyActive(profile);
-      } catch { /* best-effort — stays false */ }
+      } catch { /* best-effort, stays false */ }
     }
 
     // Header Profile. The Active badge is clickable only for a reviewer
-    // (this faculty's own HOD, or IQAC/Super Admin) — self-service exit is
+    // (this faculty's own HOD, or IQAC/Super Admin), self-service exit is
     // the separate "Delete Account" menu item, not this.
     headerContainer.innerHTML = `
       <div class="dossier-header-profile">
@@ -2227,7 +2282,7 @@ function initFacultyDossierModal() {
     }
   }
 
-  // Card click triggers — delegated on the document since faculty cards
+  // Card click triggers, delegated on the document since faculty cards
   // (and their "View Dossier" buttons) are now built asynchronously from
   // the real roster after this listener is attached, not present at
   // page load like the old static cards were.
@@ -2236,7 +2291,7 @@ function initFacultyDossierModal() {
     if (!btn) return;
     const facId = btn.getAttribute('data-faculty-id') || '1';
     modal.setAttribute('data-active-fac-id', facId);
-    // Always refetch on open — an achievement submitted via the wizard
+    // Always refetch on open, an achievement submitted via the wizard
     // (or anywhere else outside this modal's own action buttons) since the
     // last time this dossier was open wouldn't otherwise be reflected here.
     delete achievementsCache[facId];
@@ -2253,7 +2308,7 @@ function initFacultyDossierModal() {
   });
 
   // Dossier action buttons (menu toggle / add-attachment / delete / verify
-  // / download / edit description) — delegated on the modal since the
+  // / download / edit description), delegated on the modal since the
   // achievements list is rebuilt on every render.
   modal.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-action]');
@@ -2273,7 +2328,7 @@ function initFacultyDossierModal() {
       const contentType = btn.getAttribute('data-content-type') || '';
       const isBrowserViewable = ['application/pdf', 'image/jpeg', 'image/png', 'text/csv'].includes(contentType);
       if (action === 'view-evidence' && !isBrowserViewable) {
-        // No browser has a built-in renderer for Word/PowerPoint/Excel —
+        // No browser has a built-in renderer for Word/PowerPoint/Excel , 
         // that's what previewUrl is for: a PDF LibreOffice converted this
         // to in the background on upload (see
         // _run_preview_conversion_in_background), shown the exact same
@@ -2285,16 +2340,16 @@ function initFacultyDossierModal() {
         if (previewUrl) {
           // The preview endpoint's response is served with
           // Content-Type: application/pdf, so the fetched blob's own
-          // .type already reads as a PDF to openEvidenceFile — no need
+          // .type already reads as a PDF to openEvidenceFile, no need
           // to tell it that separately.
           openEvidenceFile(previewUrl, btn.getAttribute('data-filename').replace(/\.[^.]+$/, '.pdf'), false);
           return;
         }
         if (previewStatus === 'pending') {
-          showAppAlert('A preview is still being generated for this file — try again in a few seconds.');
+          showAppAlert('A preview is still being generated for this file, try again in a few seconds.');
           return;
         }
-        showAppAlert("This file type can't be previewed in the browser — downloading it instead.");
+        showAppAlert("This file type can't be previewed in the browser, downloading it instead.");
         openEvidenceFile(btn.getAttribute('data-url'), btn.getAttribute('data-filename'), true);
         return;
       }
@@ -2321,7 +2376,7 @@ function initFacultyDossierModal() {
       try {
         await window.FaemsAPI.deactivateFaculty(targetFacId, exitDate);
         document.dispatchEvent(new CustomEvent('faems:facultyStatusChanged'));
-        showToastNotification('Marked as exited — removed from the leaderboard and directory.', 'success');
+        showToastNotification('Marked as exited, removed from the leaderboard and directory.', 'success');
         modal.classList.remove('open');
       } catch (err) {
         await showAppAlert((err && err.message) || 'Could not update their status. Please try again.');
@@ -2376,7 +2431,6 @@ function initFacultyDossierModal() {
     const calls = {
       'delete-evidence': () => window.FaemsAPI.deleteEvidence(btn.getAttribute('data-evidence-id')),
       'delete-achievement': () => window.FaemsAPI.deleteAchievement(btn.getAttribute('data-achievement-id')),
-      'verify-achievement': () => window.FaemsAPI.approveAchievement(btn.getAttribute('data-achievement-id')),
     };
     const call = calls[action];
     if (!call) return;
@@ -2387,11 +2441,10 @@ function initFacultyDossierModal() {
       delete achievementsCache[facId];
       await renderDossier(facId);
       // The leaderboard's counts (and the faculty directory) are only ever
-      // refetched on their own page load — without this, verifying/
+      // refetched on their own page load, without this, verifying/
       // submitting/deleting here wouldn't show up there until a full
       // reload.
       document.dispatchEvent(new CustomEvent('faems:achievementsChanged'));
-      if (action === 'verify-achievement') showToastNotification('Achievement verified — the faculty member has been notified.', 'success');
       if (action === 'delete-evidence') showToastNotification('Attachment deleted.', 'success');
       if (action === 'delete-achievement') showToastNotification('Submission deleted.', 'success');
     } catch (err) {
@@ -2400,7 +2453,7 @@ function initFacultyDossierModal() {
     }
   });
 
-  // Year filter above the achievements list — purely a client-side show/
+  // Year filter above the achievements list, purely a client-side show/
   // hide over rows already fetched, so it works the instant a new year's
   // achievement exists, with no extra request. Year and criterion filters
   // combine (both have to match), and a criterion group whose every row
@@ -2693,33 +2746,10 @@ function initChatAssistant() {
 
   // Grounded strictly in this system's own real NBA Criterion 6 tree (see
   // CRITERION_6_KB below, which mirrors the backend's seeded SubCriterion
-  // data exactly) — no fabricated department names, HODs or criteria the
+  // data exactly), no fabricated department names, HODs or criteria the
   // system doesn't actually have.
-  const CRITERION_6_KB = {
-    '6.1': {
-      title: 'Professional Development Activities',
-      children: [
-        { code: '6.1.1', title: 'Memberships in Professional Societies at National/International Levels' },
-        { code: '6.1.2', title: "Faculty as Resource Persons or Participants in STTPs/FDPs" },
-        { code: '6.1.3', title: 'Faculty Contribution in Development of SWAYAM MOOCs and other E-Content' },
-        { code: '6.1.4', title: 'Faculty Certification of MOOCs through SWAYAM, etc.' },
-        { code: '6.1.5', title: 'FDP/STTP Organized by Department' },
-        { code: '6.1.6', title: 'Faculty Support in Student Innovative Projects' },
-        { code: '6.1.7', title: 'Faculty Internship/Training/Collaboration with Industry' },
-      ],
-    },
-    '6.2': {
-      title: 'Research and Development Activities',
-      children: [
-        { code: '6.2.1', title: 'Academic Research (number and quality of publications)' },
-        { code: '6.2.2', title: 'Ph.D. Student Details (enrolled and graduated during the assessment period)' },
-        { code: '6.2.3', title: 'Development Activities (patents granted/published, working prototypes)' },
-        { code: '6.2.4', title: 'Sponsored Research Project' },
-        { code: '6.2.5', title: 'Consultancy Work' },
-        { code: '6.2.6', title: "Institution Seed Money or Internal Research Grant to its Faculty for Research Work" },
-      ],
-    },
-  };
+  // Full Criterion 6 content lives in criterion6_kb.js (window.CRITERION_6_KB).
+  const CRITERION_6_KB = window.CRITERION_6_KB;
 
   function findSubPointByCode(code) {
     for (const top of Object.values(CRITERION_6_KB)) {
@@ -2731,11 +2761,32 @@ function initChatAssistant() {
 
   function subPointListHtml(topCode) {
     return CRITERION_6_KB[topCode].children
-      .map(c => `<li><strong>${c.code}</strong>: ${c.title}</li>`)
+      .filter(c => !/^6\.1\.2\.[12]$/.test(c.code))
+      .map(c => `<li><strong>${c.code}</strong>: ${c.title} <em>(${String(c.marks).padStart(2, '0')} marks)</em></li>`)
       .join('');
   }
 
-  const HOW_TO_SUBMIT_ACTIONS = [{ label: '📋 Open Submission Form', scroll: '#criteria-details' }];
+  function subPointDetailHtml(sp) {
+    const topCode = sp.code.slice(0, 3);
+    const guidelines = sp.guidelines.length
+      ? `<br><strong>Evaluation guidelines</strong><ul>${sp.guidelines.map(g => `<li>${g}</li>`).join('')}</ul>`
+      : '';
+    const exhibits = sp.exhibits.length
+      ? `<strong>Exhibits / context to be observed / assessed</strong><ul>${sp.exhibits.map(e => `<li>${e}</li>`).join('')}</ul>`
+      : '';
+    let children = '';
+    if (sp.parent) {
+      children = CRITERION_6_KB[topCode].children
+        .filter(c => c.code.startsWith(sp.code + '.'))
+        .map(c => subPointDetailHtml(c))
+        .join('<hr>');
+    }
+    return `<strong>Criterion ${sp.code}: ${sp.title}</strong> <span class="ai-badge">${String(sp.marks).padStart(2, '0')} marks</span><br>` +
+      `<em>Under ${topCode}: ${CRITERION_6_KB[topCode].title} (${CRITERION_6_KB[topCode].marks} marks)</em>` +
+      guidelines + exhibits + (children ? `<hr>${children}` : '');
+  }
+
+  const HOW_TO_SUBMIT_ACTIONS = [{ label: '📋 Open Submission Form', scroll: '#criteria' }];
   const CRITERION_FOLLOWUPS = [
     { label: 'Explain Criterion 6.1', query: 'What is Criterion 6.1?' },
     { label: 'Explain Criterion 6.2', query: 'What is Criterion 6.2?' },
@@ -2762,16 +2813,15 @@ function initChatAssistant() {
       };
     }
 
-    // 2. A specific sub-point by code (e.g. "6.1.2", "explain 6.2.3")
-    const codeMatch = q.match(/6\.[12]\.[1-7]/);
+    // 2. A specific sub-point by code (e.g. "6.1.2", "explain 6.2.3", "6.1.2.2")
+    const codeMatch = q.match(/6\.[12]\.[1-7](?:\.[12])?/);
     if (codeMatch) {
-      const sp = findSubPointByCode(codeMatch[0]);
+      let sp = findSubPointByCode(codeMatch[0]);
+      if (!sp) sp = findSubPointByCode(codeMatch[0].slice(0, 5));
       if (sp) {
-        const topCode = sp.code.slice(0, 3);
         return {
           thinkingStatus: `Looking up Criterion ${sp.code}...`,
-          html: `<strong>Criterion ${sp.code}: ${sp.title}</strong><br><br>
-                 This is one of the sub-points under <strong>${topCode} — ${CRITERION_6_KB[topCode].title}</strong>. Faculty submit real achievements against this sub-point through the submission form, attaching supporting documents (PDF, Word, PowerPoint, JPG or PNG) as evidence; your HOD then reviews and verifies it.`,
+          html: subPointDetailHtml(sp),
           actions: HOW_TO_SUBMIT_ACTIONS,
           followUps: CRITERION_FOLLOWUPS,
         };
@@ -2783,7 +2833,7 @@ function initChatAssistant() {
       return {
         thinkingStatus: 'Compiling Criterion 6.1 overview...',
         html: `<strong>NBA Criterion 6.1: Professional Development Activities</strong><br><br>
-               Covers faculty's continuous skill development, training and academic contribution outside direct research:
+               Total <strong>60 marks</strong>. Covers faculty's continuous skill development, training and academic contribution outside direct research (ask me about any sub-point, e.g. “What is 6.1.2.2?”, for its full evaluation guidelines):
                <ul>${subPointListHtml('6.1')}</ul>`,
         actions: HOW_TO_SUBMIT_ACTIONS,
         followUps: CRITERION_FOLLOWUPS,
@@ -2795,19 +2845,19 @@ function initChatAssistant() {
       return {
         thinkingStatus: 'Compiling Criterion 6.2 overview...',
         html: `<strong>NBA Criterion 6.2: Research and Development Activities</strong><br><br>
-               Covers departmental research output, doctoral guidance, IPR and funded/consultancy work:
+               Total <strong>60 marks</strong>. Covers departmental research output, doctoral guidance, IPR and funded/consultancy work (ask me about any sub-point, e.g. “What is 6.2.4?”, for its full evaluation guidelines):
                <ul>${subPointListHtml('6.2')}</ul>`,
         actions: HOW_TO_SUBMIT_ACTIONS,
         followUps: CRITERION_FOLLOWUPS,
       };
     }
 
-    // 5. Asking about criteria this system doesn't have (6.3, 6.4, 6.5...) —
+    // 5. Asking about criteria this system doesn't have (6.3, 6.4, 6.5...) , 
     // answered honestly rather than inventing content for them.
     if (q.match(/6\.[3-9]/) || q.includes('other criteria') || q.includes('other criterion')) {
       return {
         thinkingStatus: 'Checking the Criterion 6 tree...',
-        html: `Right now this system's NBA Criterion 6 tree only covers <strong>6.1 (Professional Development Activities)</strong> and <strong>6.2 (Research and Development Activities)</strong> — there's no 6.3 or beyond configured yet. Ask me about either one, or about a specific sub-point like 6.1.2 or 6.2.4.`,
+        html: `Right now this system's NBA Criterion 6 tree only covers <strong>6.1 (Professional Development Activities)</strong> and <strong>6.2 (Research and Development Activities)</strong>, there's no 6.3 or beyond configured yet. Ask me about either one, or about a specific sub-point like 6.1.2 or 6.2.4. Criterion 6 as a whole (Faculty Contributions) carries 120 marks.`,
         actions: HOW_TO_SUBMIT_ACTIONS,
         followUps: CRITERION_FOLLOWUPS,
       };
@@ -2820,13 +2870,13 @@ function initChatAssistant() {
         html: `<strong>How to submit an achievement</strong><br><br>
                <ol>
                  <li>Open the submission form (your <strong>Faculty Name</strong> is filled in automatically from your login).</li>
-                 <li>Pick the <strong>Top-Level Criterion</strong> — 6.1 or 6.2.</li>
+                 <li>Pick the <strong>Top-Level Criterion</strong>, 6.1 or 6.2.</li>
                  <li>Pick the specific <strong>Sub-Point</strong> that matches your achievement, narrowing further if it has sub-tiers.</li>
                  <li>Pick the <strong>Assessment Year</strong>.</li>
-                 <li>Attach your supporting document(s) — PDF, Word, PowerPoint, JPG or PNG, up to 40MB each.</li>
-                 <li>Click <strong>Submit for Review</strong>. It's saved as a draft first, so you can also come back later, add more evidence, or submit it from your own dossier.</li>
+                 <li>Attach your supporting document(s), PDF, Word, PowerPoint, JPG or PNG, up to 40MB each.</li>
+                 <li>Click <strong>Submit</strong>. It's saved as a draft first, so you can also come back later, add more evidence, or submit it from your own dossier.</li>
                </ol>
-               Once submitted, your HOD reviews it from your dossier and verifies it — you'll get a notification the moment that happens.`,
+               Once submitted, your HOD can view and download your attachments from your dossier.`,
         actions: HOW_TO_SUBMIT_ACTIONS,
         followUps: CRITERION_FOLLOWUPS,
       };
@@ -2839,8 +2889,8 @@ function initChatAssistant() {
         html: `<strong>Evidence Vault</strong><br><br>
                <ul>
                  <li><strong>SHA-256 hashing</strong>: every uploaded document gets a unique fingerprint, so the same file can't quietly be re-used for two different claims.</li>
-                 <li><strong>Verification status</strong>: each document is <em>pending</em> until your HOD verifies the achievement it belongs to.</li>
-                 <li><strong>Where to see it</strong>: open your own faculty dossier, under the <strong>Evidence Vault</strong> tab — you can view, download, or (while the achievement is still a draft) delete anything you've attached.</li>
+                 <li><strong>HOD access</strong>: your HOD can view and download your attachments, but does not need to verify them.</li>
+                 <li><strong>Where to see it</strong>: open your own faculty dossier, under the <strong>Evidence Vault</strong> tab, you can view, download, or (while the achievement is still a draft) delete anything you've attached.</li>
                </ul>`,
         actions: HOW_TO_SUBMIT_ACTIONS,
         followUps: CRITERION_FOLLOWUPS,
@@ -2862,18 +2912,8 @@ function initChatAssistant() {
 /* ==========================================================================
    10. Modals Management (Login, Portal & Submission Success)
    ========================================================================== */
-// HOD accounts are actually issued on thakureducation.org, not the main
-// tcetmumbai.in faculty domain — auto-switching the domain picker to match
-// whenever Designation is set to HOD means nobody has to remember to flip
-// it themselves. It's still a real <select>, so it can be overridden by
-// hand for the rare exception. Shared by both the Register form and the
-// Add Faculty modal (different top-level init functions, same behavior).
-function autoSelectDomainForDesignation(designationSelect, domainSelect) {
-  if (!designationSelect || !domainSelect) return;
-  designationSelect.addEventListener('change', () => {
-    domainSelect.value = designationSelect.value === 'hod' ? 'thakureducation.org' : 'tcetmumbai.in';
-  });
-}
+// Every faculty member (HOD included) holds both an @tcetmumbai.in and an
+// @thakureducation.org address, so the domain picker is never auto-switched.
 
 function initModals() {
   const loginModal = document.getElementById('loginModal');
@@ -2900,7 +2940,7 @@ function initModals() {
   }
   if (headerGetStartedBtn) {
     headerGetStartedBtn.addEventListener('click', () => {
-      const formSection = document.getElementById('criteria-details');
+      const formSection = document.getElementById('criteria');
       if (formSection) {
         formSection.scrollIntoView({ behavior: 'smooth' });
         const step1 = document.getElementById('step1DeptSelect');
@@ -2912,17 +2952,17 @@ function initModals() {
   }
   if (heroGetStartedBtn) {
     heroGetStartedBtn.addEventListener('click', () => {
-      document.getElementById('faculties-section').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('faculties').scrollIntoView({ behavior: 'smooth' });
     });
   }
   if (heroLearnMoreBtn) {
     heroLearnMoreBtn.addEventListener('click', () => {
-      const hodSec = document.getElementById('hod-section');
+      const hodSec = document.getElementById('leaderboard');
       if (hodSec) hodSec.scrollIntoView({ behavior: 'smooth' });
     });
   }
 
-  // While the login gate is locked, the login modal can't be dismissed —
+  // While the login gate is locked, the login modal can't be dismissed , 
   // no page content is visible until a session is confirmed (see the
   // faems-gate-locked class on <html>, set/cleared in index.html's <head>
   // and here once login/MFA succeeds).
@@ -2967,14 +3007,14 @@ function initModals() {
   initRealAuth(loginModal);
 }
 
-// Reveals the site (removes the login-gate lock) — called once login/MFA
+// Reveals the site (removes the login-gate lock), called once login/MFA
 // succeeds, and once a restored session is confirmed still valid.
 function unlockLoginGate() {
   document.documentElement.classList.remove('faems-gate-locked');
 }
 
 /* ==========================================================================
-   Real authentication against the Django/Postgres backend — replaces the
+   Real authentication against the Django/Postgres backend, replaces the
    old always-succeeds demo login. Two forms live in the same modal
    (#loginForm, #mfaForm); MFA only appears for roles that require it
    (HOD / IQAC Admin / Super Admin), exactly like the account actually
@@ -3048,7 +3088,7 @@ function initRealAuth(loginModal) {
       currentCaptcha = await window.FaemsAPI.getCaptcha();
       if (captchaImageWrap) captchaImageWrap.innerHTML = renderCaptchaSVG(currentCaptcha.question);
     } catch {
-      if (captchaImageWrap) captchaImageWrap.innerHTML = '<span style="color:#ff6b6b;font-size:0.78rem;">Couldn\'t load code — try refresh</span>';
+      if (captchaImageWrap) captchaImageWrap.innerHTML = '<span style="color:#ff6b6b;font-size:0.78rem;">Couldn\'t load code, try refresh</span>';
     }
     if (captchaInput) captchaInput.value = '';
   }
@@ -3056,7 +3096,7 @@ function initRealAuth(loginModal) {
   if (refreshCaptchaBtn) refreshCaptchaBtn.addEventListener('click', loadCaptcha);
   loadCaptcha();
 
-  // The captcha token expires after 5 minutes — get a fresh one each time
+  // The captcha token expires after 5 minutes, get a fresh one each time
   // the modal is reopened, however it was opened (header button, the
   // achievement form's "please sign in" prompt, etc.), not just at page load.
   if (loginModal) {
@@ -3070,7 +3110,7 @@ function initRealAuth(loginModal) {
 
   const loginDomainSelect = document.getElementById('loginDomain');
 
-  // Strip any "@" a visitor tries to type — the domain picker beside the
+  // Strip any "@" a visitor tries to type, the domain picker beside the
   // field is the only way to choose the domain, so the text field itself
   // still isn't where it comes from.
   if (emailInput) {
@@ -3082,7 +3122,7 @@ function initRealAuth(loginModal) {
   }
 
   // ---- Forgot Password (2-step: verify email + date of birth on file,
-  // then set a new password — no email/OTP dependency) ----
+  // then set a new password, no email/OTP dependency) ----
   const forgotRequestForm = document.getElementById('forgotRequestForm');
   const forgotResetForm = document.getElementById('forgotResetForm');
   const forgotEmailInput = document.getElementById('forgotEmail');
@@ -3135,7 +3175,7 @@ function initRealAuth(loginModal) {
     forgotRequestForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       hideError(forgotRequestError);
-      // Same hidden-input-behind-three-selects situation as regDob — the
+      // Same hidden-input-behind-three-selects situation as regDob, the
       // native required check no longer fires on its own.
       if (!forgotDobInput.value) {
         showError(forgotRequestError, 'Please select your complete date of birth.');
@@ -3192,7 +3232,7 @@ function initRealAuth(loginModal) {
     try {
       document.dispatchEvent(new CustomEvent('faems:authenticated', { detail: user }));
     } catch {
-      // older browsers — non-fatal, app.js also re-checks on modal close
+      // older browsers, non-fatal, app.js also re-checks on modal close
     }
     loginForm.innerHTML = `
       <div style="text-align:center;padding:1.5rem 0;">
@@ -3208,7 +3248,7 @@ function initRealAuth(loginModal) {
     e.preventDefault();
     hideError(loginError);
     if (!currentCaptcha) {
-      showError(loginError, 'Security code is still loading — please wait a moment and try again.');
+      showError(loginError, 'Security code is still loading, please wait a moment and try again.');
       return;
     }
     loginSubmitBtn.disabled = true;
@@ -3272,13 +3312,11 @@ function initRealAuth(loginModal) {
   attachPasswordStrengthMeter('regPassword', 'regPasswordStrength', 'regPasswordSuggestBtn');
   attachPasswordStrengthMeter('forgotNewPassword', 'forgotNewPasswordStrength', 'forgotNewPasswordSuggestBtn');
 
-  // A person must be 18+ to register — the year list itself only offers
+  // A person must be 18+ to register, the year list itself only offers
   // qualifying years, same guarantee the old date input's max= gave, as
   // well as validated again on submit.
   initDateInputBounds('regDob', { minYear: 1965, maxYear: new Date().getFullYear() - 18 });
   initDateInputBounds('regJoinDate', { minYear: 2022, maxToday: true });
-
-  autoSelectDomainForDesignation(document.getElementById('regDesignation'), document.getElementById('regDomain'));
 
   if (regEmailInput) {
     regEmailInput.addEventListener('input', () => {
@@ -3320,7 +3358,7 @@ function initRealAuth(loginModal) {
       // Date of Birth is required, but now lives on a hidden input (the
       // three visible day/month/year <select>s are what the person
       // actually fills in), so the browser's native required-field
-      // validation never sees it — has to be checked by hand instead.
+      // validation never sees it, has to be checked by hand instead.
       if (!regDobInput.value) {
         showError(registerError, 'Please select your complete date of birth.');
         return;
@@ -3347,11 +3385,10 @@ function initRealAuth(loginModal) {
         showError(loginError, '');
         hideError(loginError);
         await showAppAlert(
-          "Your request has been shared with the HOD. Your account will be created once it's approved — "
-          + "you'll be able to log in after that."
+          "Your account has been created. You can log in now."
         );
       } catch (err) {
-        const detail = friendlyErrorMessage(err, 'Could not submit your registration. Please check the details and try again.');
+        const detail = friendlyErrorMessage(err, 'Could not create your account. Please check the details and try again.');
         showError(registerError, detail);
       } finally {
         registerSubmitBtn.disabled = false;
@@ -3410,7 +3447,7 @@ function initAccountMenu() {
         const res = await api.unreadNotificationCount();
         serverCount = res.count;
       } catch {
-        // best-effort — stale/expired session, leave the server half as-is
+        // best-effort, stale/expired session, leave the server half as-is
       }
     }
     const total = serverCount + getUnreadLocalNotificationCount();
@@ -3420,12 +3457,12 @@ function initAccountMenu() {
   // Same cross-tab gap as the leaderboard's poll: a notification created by
   // someone else's action (a different faculty submitting/deleting, an HOD
   // verifying) reaches this tab's badge within this interval, not the
-  // instant it's created server-side — isAuthenticated() inside the
+  // instant it's created server-side, isAuthenticated() inside the
   // function already makes this a no-op before login. 15s (not 30s) so a
   // notification that just arrived doesn't sit stale-looking for as long.
   setInterval(refreshUnreadCount, 15000);
   // A local task reminder firing (see fireTaskReminder in
-  // initCalendarAndTodoList) needs the badge to pick it up immediately —
+  // initCalendarAndTodoList) needs the badge to pick it up immediately , 
   // that code has no access to this closure's refreshUnreadCount, hence
   // the event instead of a direct call.
   document.addEventListener('faems:localNotificationAdded', refreshUnreadCount);
@@ -3438,33 +3475,17 @@ function initAccountMenu() {
       const res = await api.listNotifications();
       serverRows = res.results || res;
     } catch {
-      // best-effort — local reminders below still render even if this fails
+      // best-effort, local reminders below still render even if this fails
     }
     const localRows = getLocalNotifications()
       .filter((n) => !n.isRead)
       .map((n) => ({ id: n.id, title: n.title, message: n.message, created_at: n.createdAt, isLocal: true }));
     const rows = [...localRows, ...serverRows].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    // Pending-faculty-approval notifications get a bigger, actionable card
-    // of their own — a faculty member literally cannot log in until one of
-    // these is acted on, so burying it as a plain text row isn't enough.
-    const approvalRows = rows.filter(n => n.notification_type === 'faculty_registration_pending');
-    const plainRows = rows.filter(n => n.notification_type !== 'faculty_registration_pending');
+    const plainRows = rows;
     if (!rows.length) {
       notifList.innerHTML = '<p class="notif-empty-text">No notifications yet.</p>';
       return;
     }
-    const approvalCardsHtml = approvalRows.map(n => {
-      const requestId = (n.related_evidence_id || '').replace('regreq-', '');
-      return `
-      <div class="notif-approval-card" data-approval-notif-id="${n.id}" data-approval-local="${n.isLocal ? '1' : ''}">
-        <div class="notif-approval-card-title">${escapeHtml(n.title)}</div>
-        <div class="notif-approval-card-meta">${escapeHtml(n.message)}</div>
-        <div class="notif-approval-card-actions">
-          <button type="button" class="notif-approval-approve-btn" data-approve-request-id="${requestId}">Approve</button>
-          <button type="button" class="notif-approval-reject-btn" data-reject-request-id="${requestId}">Reject</button>
-        </div>
-      </div>`;
-    }).join('');
     const plainRowsHtml = plainRows.map(n => `
       <button type="button" class="notif-item unread" data-notif-id="${n.id}" data-local="${n.isLocal ? '1' : ''}">
         <div class="notif-item-title">${escapeHtml(n.title)}</div>
@@ -3472,8 +3493,8 @@ function initAccountMenu() {
         <div class="notif-item-time">${timeAgo(n.created_at)}${n.related_evidence_id ? ' • ' + n.related_evidence_id : ''}</div>
       </button>
     `).join('');
-    notifList.innerHTML = approvalCardsHtml + plainRowsHtml;
-    // Marking read means "done with this" — the row leaves the list
+    notifList.innerHTML = plainRowsHtml;
+    // Marking read means "done with this", the row leaves the list
     // right away instead of just losing its unread styling, so read
     // notifications never pile up here.
     notifList.querySelectorAll('.notif-item').forEach(item => {
@@ -3487,123 +3508,10 @@ function initAccountMenu() {
           try { await api.markNotificationRead(id); } catch { /* best-effort */ }
         }
         refreshUnreadCount();
-        if (!notifList.querySelector('.notif-item') && !notifList.querySelector('.notif-approval-card')) {
+        if (!notifList.querySelector('.notif-item')) {
           notifList.innerHTML = '<p class="notif-empty-text">No notifications yet.</p>';
         }
       });
-    });
-    notifList.querySelectorAll('[data-approve-request-id]').forEach(btn => {
-      btn.addEventListener('click', () => handleFacultyApprovalAction(btn.getAttribute('data-approve-request-id'), 'approve', btn));
-    });
-    notifList.querySelectorAll('[data-reject-request-id]').forEach(btn => {
-      btn.addEventListener('click', () => handleFacultyApprovalAction(btn.getAttribute('data-reject-request-id'), 'reject', btn));
-    });
-  }
-
-  // Shared by the notification dropdown's approval card and the dedicated
-  // Approve Faculty modal — one action, two entry points.
-  async function handleFacultyApprovalAction(requestId, action, triggerBtn) {
-    const card = triggerBtn.closest('.notif-approval-card') || triggerBtn.closest('.approve-faculty-row');
-    if (card) card.querySelectorAll('button').forEach(b => b.disabled = true);
-    try {
-      if (action === 'approve') {
-        await api.approveFacultyRegistration(requestId);
-      } else {
-        await api.rejectFacultyRegistration(requestId);
-      }
-      // The underlying Notification row is still unread server-side —
-      // acting on the request here should also clear it from the bell,
-      // not just from whichever surface (card vs modal) was clicked.
-      const notifId = card && card.getAttribute('data-approval-notif-id');
-      if (notifId) {
-        try { await api.markNotificationRead(notifId); } catch { /* best-effort */ }
-      }
-      if (card) card.remove();
-      refreshUnreadCount();
-      refreshApprovalBadge();
-      if (notifList && !notifList.querySelector('.notif-item') && !notifList.querySelector('.notif-approval-card')) {
-        notifList.innerHTML = '<p class="notif-empty-text">No notifications yet.</p>';
-      }
-      const approveFacultyList = document.getElementById('approveFacultyList');
-      if (approveFacultyList && !approveFacultyList.querySelector('.approve-faculty-row')) {
-        approveFacultyList.innerHTML = '<p class="notif-empty-text">No pending registrations.</p>';
-      }
-    } catch (err) {
-      await showAppAlert(friendlyErrorMessage(err, `Could not ${action} this registration. Please try again.`));
-      if (card) card.querySelectorAll('button').forEach(b => b.disabled = false);
-    }
-  }
-
-  const approveFacultyMenuBtn = document.getElementById('approveFacultyMenuBtn');
-  const approveFacultyBadge = document.getElementById('approveFacultyBadge');
-  const approveFacultyModal = document.getElementById('approveFacultyModal');
-  const approveFacultyList = document.getElementById('approveFacultyList');
-  const closeApproveFacultyModal = document.getElementById('closeApproveFacultyModal');
-
-  async function refreshApprovalBadge() {
-    if (!approveFacultyMenuBtn || !CAN_MANAGE_FACULTY_ROLES.has((window.FAEMS_CURRENT_USER || {}).role)) {
-      if (approveFacultyMenuBtn) approveFacultyMenuBtn.style.display = 'none';
-      return;
-    }
-    approveFacultyMenuBtn.style.display = '';
-    try {
-      const res = await api.listPendingFacultyApprovals();
-      const count = (res.results || res).length;
-      if (approveFacultyBadge) {
-        approveFacultyBadge.textContent = count > 9 ? '9+' : String(count);
-        approveFacultyBadge.style.display = count > 0 ? '' : 'none';
-      }
-    } catch { /* best-effort */ }
-  }
-  document.addEventListener('faems:authenticated', refreshApprovalBadge);
-  setInterval(refreshApprovalBadge, 30000);
-
-  async function loadApproveFacultyList() {
-    if (!approveFacultyList) return;
-    approveFacultyList.innerHTML = '<p class="notif-empty-text">Loading…</p>';
-    try {
-      const res = await api.listPendingFacultyApprovals();
-      const rows = res.results || res;
-      if (!rows.length) {
-        approveFacultyList.innerHTML = '<p class="notif-empty-text">No pending registrations.</p>';
-        return;
-      }
-      approveFacultyList.innerHTML = rows.map(r => `
-        <div class="approve-faculty-row">
-          <div class="approve-faculty-row-info">
-            <div class="approve-faculty-row-name">${escapeHtml(r.full_name)}</div>
-            <div class="approve-faculty-row-meta">${escapeHtml(r.email)} · ${escapeHtml(designationLabel(r.designation))} · Emp ID: ${escapeHtml(r.employee_id || '—')}</div>
-          </div>
-          <div class="approve-faculty-row-actions">
-            <button type="button" class="notif-approval-approve-btn" data-approve-request-id="${r.id}">Approve</button>
-            <button type="button" class="notif-approval-reject-btn" data-reject-request-id="${r.id}">Reject</button>
-          </div>
-        </div>
-      `).join('');
-      approveFacultyList.querySelectorAll('[data-approve-request-id]').forEach(btn => {
-        btn.addEventListener('click', () => handleFacultyApprovalAction(btn.getAttribute('data-approve-request-id'), 'approve', btn));
-      });
-      approveFacultyList.querySelectorAll('[data-reject-request-id]').forEach(btn => {
-        btn.addEventListener('click', () => handleFacultyApprovalAction(btn.getAttribute('data-reject-request-id'), 'reject', btn));
-      });
-    } catch {
-      approveFacultyList.innerHTML = '<p class="notif-empty-text">Could not load pending registrations.</p>';
-    }
-  }
-
-  if (approveFacultyMenuBtn) {
-    approveFacultyMenuBtn.addEventListener('click', () => {
-      if (accountDropdown) accountDropdown.classList.remove('open');
-      if (approveFacultyModal) approveFacultyModal.classList.add('open');
-      loadApproveFacultyList();
-    });
-  }
-  if (closeApproveFacultyModal) {
-    closeApproveFacultyModal.addEventListener('click', () => approveFacultyModal.classList.remove('open'));
-  }
-  if (approveFacultyModal) {
-    approveFacultyModal.addEventListener('click', (e) => {
-      if (e.target === approveFacultyModal) approveFacultyModal.classList.remove('open');
     });
   }
 
@@ -3621,7 +3529,7 @@ function initAccountMenu() {
       if (!wasOpen) {
         renderNotifications();
         // renderNotifications() re-fetches the *list*, but the badge
-        // *count* only otherwise refreshes on the 30s interval below —
+        // *count* only otherwise refreshes on the 30s interval below , 
         // without this, a notification that arrived in the last <30s
         // shows correctly inside the opened dropdown while the badge
         // number next to it still shows the stale, lower count until the
@@ -3664,14 +3572,13 @@ function initAccountMenu() {
   }
 
   // ---- Add Faculty (HOD adds to their own department; IQAC/Super Admin can
-  // pick any department — both enforced again server-side either way) ----
+  // pick any department, both enforced again server-side either way) ----
   const addFacultyModal = document.getElementById('addFacultyModal');
   const addFacultyForm = document.getElementById('addFacultyForm');
   const addFacultyDeptSelect = document.getElementById('addFacultyDepartment');
   const addFacultyError = document.getElementById('addFacultyError');
   const addFacultySubmitBtn = document.getElementById('addFacultySubmitBtn');
   const closeAddFacultyModal = document.getElementById('closeAddFacultyModal');
-  autoSelectDomainForDesignation(document.getElementById('addFacultyDesignation'), document.getElementById('addFacultyDomain'));
 
   if (addFacultyMenuBtn) {
     addFacultyMenuBtn.addEventListener('click', async () => {
@@ -3723,7 +3630,7 @@ function initAccountMenu() {
         await api.createFaculty(payload);
         addFacultyModal.classList.remove('open');
         addFacultyForm.reset();
-        await showAppAlert(`${payload.full_name} has been added. Share the temporary password with them directly — it won't be shown again here.`);
+        await showAppAlert(`${payload.full_name} has been added. Share the temporary password with them directly, it won't be shown again here.`);
         if (typeof buildRealSubmissionConfig === 'function') buildRealSubmissionConfig();
       } catch (err) {
         if (addFacultyError) {
@@ -3746,7 +3653,7 @@ function initAccountMenu() {
     });
   }
 
-  // ---- Update Details (self-service — everything except email) ----
+  // ---- Update Details (self-service, everything except email) ----
   const updateDetailsModal = document.getElementById('updateDetailsModal');
   const closeUpdateDetailsModal = document.getElementById('closeUpdateDetailsModal');
   const updateDetailsForm = document.getElementById('updateDetailsForm');
@@ -3762,7 +3669,7 @@ function initAccountMenu() {
   restrictToTenDigits(document.getElementById('hodTransferEmployeeId'));
 
   // Only ever relevant for the person who opened this modal actually
-  // being the department's current HOD — everyone else's designation
+  // being the department's current HOD, everyone else's designation
   // select just behaves like a plain dropdown, no transfer box.
   const udDesignationSelect = document.getElementById('udDesignation');
   const hodTransferBox = document.getElementById('hodTransferBox');
@@ -3780,7 +3687,7 @@ function initAccountMenu() {
   }
   if (hodTransferModeSelect) hodTransferModeSelect.addEventListener('change', syncHodTransferModeFields);
 
-  // The rest of the department, minus the acting HOD herself — anyone
+  // The rest of the department, minus the acting HOD herself, anyone
   // non-active isn't offered (she'd be promoting someone who can't log
   // in to use the access).
   async function loadHodTransferExistingFacultyOptions() {
@@ -3788,7 +3695,7 @@ function initAccountMenu() {
     const user = window.FAEMS_CURRENT_USER;
     hodTransferExistingFacultySelect.innerHTML = '<option value="" selected disabled>Loading…</option>';
     try {
-      // No params needed — list() already scopes an HOD caller to her own
+      // No params needed, list() already scopes an HOD caller to her own
       // department's currently-active faculty (FacultyProfileViewSet.get_queryset).
       const res = await api.listFaculty();
       const rows = (res.results || res).filter(fp => fp.id !== user.faculty_profile_id);
@@ -3798,7 +3705,7 @@ function initAccountMenu() {
       }
       hodTransferExistingFacultySelect.innerHTML =
         '<option value="" selected disabled>Select…</option>' +
-        rows.map(fp => `<option value="${fp.id}">${escapeHtml(fp.full_name)} — ${escapeHtml(designationLabel(fp.designation))} (Emp ID: ${escapeHtml(fp.employee_id || '—')})</option>`).join('');
+        rows.map(fp => `<option value="${fp.id}">${escapeHtml(fp.full_name)}, ${escapeHtml(designationLabel(fp.designation))} (Emp ID: ${escapeHtml(fp.employee_id || 'Not set')})</option>`).join('');
     } catch {
       hodTransferExistingFacultySelect.innerHTML = '<option value="" selected disabled>Could not load faculty list</option>';
     }
@@ -3837,11 +3744,11 @@ function initAccountMenu() {
         document.getElementById('udDesignation').value = profile.designation || 'assistant_professor';
         document.getElementById('udPhone').value = profile.contact_number || '';
         document.getElementById('udJoinDate').value = profile.join_date || '';
-        document.getElementById('udGender').value = profile.gender || '';
+        document.getElementById('udGender').value = profile.gender || 'female';
         document.getElementById('udDob').value = profile.date_of_birth || '';
         document.getElementById('udBio').value = profile.bio || '';
         openedAsCurrentHOD = user.role === 'hod' && profile.designation === 'hod';
-        // Reset from any previous open — this is a real account being
+        // Reset from any previous open, this is a real account being
         // created on submit, not a draft that should survive a reopen.
         ['hodTransferTitle', 'hodTransferFullName', 'hodTransferEmployeeId', 'hodTransferEmail', 'hodTransferPassword', 'hodTransferJoinDate', 'hodTransferDob'].forEach(id => {
           const el = document.getElementById(id);
@@ -3851,7 +3758,7 @@ function initAccountMenu() {
         if (updateDetailsError) updateDetailsError.style.display = 'none';
         if (updateDetailsModal) updateDetailsModal.classList.add('open');
       } catch {
-        await showAppAlert("Couldn't load your profile — please try again.");
+        await showAppAlert("Couldn't load your profile, please try again.");
       }
     });
   }
@@ -3918,7 +3825,7 @@ function initAccountMenu() {
             date_of_birth: document.getElementById('hodTransferDob').value || null,
           };
           await api.transferHOD(udDesignationSelect.value, successor);
-          // The successor's account is created by transfer_hod itself —
+          // The successor's account is created by transfer_hod itself , 
           // this PATCH only covers the *other* profile fields (phone,
           // bio, ...) that aren't part of that atomic transfer.
           await api.updateMyProfile(user.faculty_profile_id, {
@@ -3947,7 +3854,7 @@ function initAccountMenu() {
         // Re-fetch /auth/me/ rather than hand-merging the PATCH response:
         // it's the same MeSerializer shape enterPortal() set at login (User
         // row, nested department object), so this is the one place
-        // guaranteed to match — a hand merge risks clobbering the nested
+        // guaranteed to match, a hand merge risks clobbering the nested
         // department object with the profile PATCH's raw department id.
         const freshUser = await api.me();
         window.FAEMS_CURRENT_USER = freshUser;
@@ -3968,7 +3875,7 @@ function initAccountMenu() {
     });
   }
 
-  // ---- Delete Account (self-service) — a future last working date only
+  // ---- Delete Account (self-service), a future last working date only
   // schedules the departure; today applies it immediately. See
   // FacultyProfileViewSet.delete_my_account for the full behavior.
   const deleteAccountMenuBtn = document.getElementById('deleteAccountMenuBtn');
@@ -4009,9 +3916,9 @@ function initAccountMenu() {
       const isFuture = lastDay > todayStr();
       const confirmed = await showAppConfirm(
         isFuture
-          ? `Schedule your account for deletion after ${lastDay}? You'll keep working normally until then — this cannot be undone by you.`
+          ? `Schedule your account for deletion after ${lastDay}? You'll keep working normally until then, this cannot be undone by you.`
           : 'Delete your account now? You will be signed out immediately and will no longer be able to log in. ' +
-            'Your existing achievement submissions stay on institutional record for accreditation purposes — this cannot be undone by you.',
+            'Your existing achievement submissions stay on institutional record for accreditation purposes, this cannot be undone by you.',
         { danger: true, okText: 'Confirm' }
       );
       if (!confirmed) return;
@@ -4048,14 +3955,14 @@ function initAccountMenu() {
       // enterPortal() (fresh in-page login) dispatches this; a page
       // reload with a still-valid session restores the same
       // window.FAEMS_CURRENT_USER through this separate path and needs
-      // to fire it too — every role-conditional bit of UI that only
+      // to fire it too, every role-conditional bit of UI that only
       // reacts to this event (the HOD-only Active/Non-active roster
       // toggle, among others) would otherwise stay stuck in its
       // logged-out state until something else happened to touch it.
       document.dispatchEvent(new CustomEvent('faems:authenticated', { detail: user }));
     }).catch(() => {
       // Saved token is stale/invalid (expired, revoked, wrong signing key
-      // after a redeploy, etc.) — the optimistic early-unlock in
+      // after a redeploy, etc.), the optimistic early-unlock in
       // index.html's <head> was wrong, so undo it: drop the dead token and
       // re-lock behind the login modal instead of leaving a blank page.
       api.setTokens(null);
@@ -4096,7 +4003,7 @@ function initNewsletter() {
    Seed data schema for configurable administrative evaluation rules.
    No raw code IDs or marks/scores are ever visible in the faculty UI.
    ========================================================================== */
-// Original hand-authored demo data — kept as an offline fallback so the
+// Original hand-authored demo data, kept as an offline fallback so the
 // page still shows a populated form if the backend is unreachable. It is
 // overwritten with real data from Postgres by buildRealSubmissionConfig()
 // below, which runs once at page load before the form initializes.
@@ -4134,7 +4041,7 @@ window.FAAEMS_SUBMISSION_CONFIG_DEMO_FALLBACK = {
     },
     {
       id: 'ecs',
-      name: 'B.E - Electronics and Computer Science',
+      name: 'B.E Electronics and Computer Science',
       faculty: [
         'Dr. Shailendra K. Pawar (Professor & HOD)',
         'Prof. Vandana M. Sawant (Associate Professor)',
@@ -4143,7 +4050,7 @@ window.FAAEMS_SUBMISSION_CONFIG_DEMO_FALLBACK = {
     },
     {
       id: 'mech',
-      name: 'B.E - Mechanical Engineering',
+      name: 'B.E Mechanical Engineering',
       faculty: [
         'Dr. Rajeshwar S. More (Professor & HOD)',
         'Prof. Kiran S. Sanap (Associate Professor)',
@@ -4179,7 +4086,7 @@ window.FAAEMS_SUBMISSION_CONFIG_DEMO_FALLBACK = {
     },
     {
       id: 'aiml',
-      name: 'B.Tech – Artificial Intelligence & Machine Learning',
+      name: 'B.Tech Artificial Intelligence & Machine Learning',
       faculty: [
         'Dr. Shiwani Gupta (Professor & HOD)',
         'Mrs. Pranjali Sankhe (Assistant Professor)',
@@ -4190,7 +4097,7 @@ window.FAAEMS_SUBMISSION_CONFIG_DEMO_FALLBACK = {
     },
     {
       id: 'aids',
-      name: 'B.Tech – Artificial Intelligence & Data Science',
+      name: 'B.Tech Artificial Intelligence & Data Science',
       faculty: [
         'Dr. Ramesh V. Kulkarni (Professor & HOD)',
         'Prof. Sandeep K. More (Associate Professor)',
@@ -4200,7 +4107,7 @@ window.FAAEMS_SUBMISSION_CONFIG_DEMO_FALLBACK = {
     },
     {
       id: 'cseiot',
-      name: 'B.Tech – Computer Science and Engineering (IoT)',
+      name: 'B.Tech Computer Science and Engineering (IoT)',
       faculty: [
         'Dr. Hemant K. Shinde (Professor & HOD)',
         'Prof. Shilpa M. Verma (Associate Professor)',
@@ -4348,7 +4255,17 @@ window.FAEMS_LOOKUP = {
 // populateFaculties/populateCriteria/updateSubPoints/updateFurtherOptions/
 // updateFurtherContd already expect. Runs once, before the form is
 // initialized, so it never has to re-render an already-populated form.
+// One transient failure (backend restarting, a dropped request) used to leave
+// the form on the offline demo data until a full page reload, which then
+// surfaced as a confusing "could not be loaded" notice on submit, so retry
+// once before giving up.
 async function buildRealSubmissionConfig() {
+  if (await buildRealSubmissionConfigOnce()) return true;
+  await new Promise(r => setTimeout(r, 1500));
+  return buildRealSubmissionConfigOnce();
+}
+
+async function buildRealSubmissionConfigOnce() {
   const api = window.FaemsAPI;
   if (!api) return false;
 
@@ -4438,7 +4355,7 @@ async function buildRealSubmissionConfig() {
     };
     return true;
   } catch (err) {
-    console.error('Live criteria/department data unavailable — showing offline demo data instead.', err);
+    console.error('Live criteria/department data unavailable, showing offline demo data instead.', err);
     return false;
   }
 }
@@ -4486,7 +4403,7 @@ function initAchievementSubmissionForm() {
   };
 
   // You can only ever submit an achievement under your own faculty profile
-  // (the backend rejects anything else — see AchievementViewSet.perform_create),
+  // (the backend rejects anything else, see AchievementViewSet.perform_create),
   // so this field is just a locked display of who you're signed in as, not
   // a picker over every other department's roster.
   function populateFaculties() {
@@ -4511,15 +4428,23 @@ function initAchievementSubmissionForm() {
   }
 
   // Populate the Year dropdown from the live cycle list (falls back to the
-  // static demo years when offline), keeping 2026-2027 — the current
-  // academic year — selected by default unless the caller already picked
+  // static demo years when offline), keeping 2026-2027, the current
+  // academic year, selected by default unless the caller already picked
   // something else. Always ends with the "+ Add Year..." sentinel option,
   // which the change handler below intercepts rather than treating as a
   // real year.
   function populateYears(preserveSelection) {
     if (!yearSelect) return;
     const previous = preserveSelection ? state.year : null;
-    const years = (window.FAAEMS_SUBMISSION_CONFIG.years || []).slice();
+    const nowLabel = currentAcademicYearLabel();
+    const startOf = (l) => parseInt(String(l).split('-')[0], 10) || 0;
+    const cfgYears = (window.FAAEMS_SUBMISSION_CONFIG.years || []).slice();
+    // Current academic year first, then earlier years (newest first), then later ones.
+    const years = [
+      ...cfgYears.filter(y => y === nowLabel),
+      ...cfgYears.filter(y => startOf(y) < startOf(nowLabel)).sort((a, b) => startOf(b) - startOf(a)),
+      ...cfgYears.filter(y => startOf(y) > startOf(nowLabel)).sort((a, b) => startOf(a) - startOf(b)),
+    ];
     yearSelect.innerHTML = '';
     years.forEach(y => {
       const opt = document.createElement('option');
@@ -4527,11 +4452,11 @@ function initAchievementSubmissionForm() {
       // A year only you added shows that right in the list, so it's clear
       // at a glance which years can be removed (via the "Remove this
       // year" link below, once selected) without having to click through
-      // each one — the institution's default years never get this suffix.
+      // each one, the institution's default years never get this suffix.
       const removable = window.FAEMS_LOOKUP && window.FAEMS_LOOKUP.cycleCanRemoveByLabel
         ? !!window.FAEMS_LOOKUP.cycleCanRemoveByLabel[y]
         : false;
-      opt.textContent = removable ? `${y} (added by you — removable)` : y;
+      opt.textContent = removable ? `${y} (added by you, removable)` : y;
       yearSelect.appendChild(opt);
     });
     const addOpt = document.createElement('option');
@@ -4539,7 +4464,7 @@ function initAchievementSubmissionForm() {
     addOpt.textContent = '+ Add Year…';
     yearSelect.appendChild(addOpt);
 
-    const fallback = years.includes('2026-2027') ? '2026-2027' : years[years.length - 1];
+    const fallback = years.includes(nowLabel) ? nowLabel : years[0];
     const target = previous && years.includes(previous) ? previous : fallback;
     if (target) {
       yearSelect.value = target;
@@ -4549,7 +4474,7 @@ function initAchievementSubmissionForm() {
   }
 
   // Only a year the signed-in faculty added themselves (server-reported
-  // can_remove — see CycleViewSet.remove_mine) ever shows the "Remove this
+  // can_remove, see CycleViewSet.remove_mine) ever shows the "Remove this
   // year" link; the institution's default years never do.
   function updateDeleteYearBtn() {
     if (!deleteYearBtn) return;
@@ -4633,7 +4558,11 @@ function initAchievementSubmissionForm() {
         furtherContdSelect.disabled = true;
       }
       if (colFurtherContd) colFurtherContd.classList.remove('active-highlight');
-      state.furtherLevel1 = 'Not applicable';
+      // Empty, not a placeholder string: submit resolves the criterion ID from
+      // furtherLevel2 || furtherLevel1 || subPointTitle, and the text
+      // 'Not applicable' matched nothing, which made every sub-point without
+      // further options fail with "data could not be loaded".
+      state.furtherLevel1 = '';
       state.furtherLevel2 = '';
       updateTrack(50);
       return;
@@ -4752,9 +4681,9 @@ function initAchievementSubmissionForm() {
         return;
       }
       // "+ Add Year..." picked: create the next academic year on the
-      // backend (scoped to this faculty's own visible years — see
+      // backend (scoped to this faculty's own visible years, see
       // CycleViewSet.add_next), add it to the dropdown, but per spec do
-      // NOT auto-select it — restore whatever year was previously chosen.
+      // NOT auto-select it, restore whatever year was previously chosen.
       const previousYear = state.year;
       yearSelect.disabled = true;
       try {
@@ -4890,7 +4819,7 @@ function initAchievementSubmissionForm() {
     });
   }
 
-  // Submit for Review — creates the Achievement, uploads each attached
+  // Submit for Review, creates the Achievement, uploads each attached
   // file as evidence, then submits it, all against the real backend.
   if (submitBtn) {
     submitBtn.addEventListener('click', async () => {
@@ -4927,14 +4856,39 @@ function initAchievementSubmissionForm() {
         return;
       }
 
-      const lookup = window.FAEMS_LOOKUP || {};
-      const facultyId = lookup.facultyIdByName ? lookup.facultyIdByName[state.facultyName] : undefined;
-      const cycleId = lookup.cycleIdByLabel ? lookup.cycleIdByLabel[state.year] : undefined;
+      // Resolve the real database IDs behind the dropdown labels. The lookup
+      // is built once at page load, so it can be stale or empty (the page
+      // loaded before login, the backend was restarting at that moment,
+      // the person renamed themselves, a year was added...). Rather than
+      // failing, rebuild it once from the server and try again. The
+      // faculty ID comes straight from the signed-in account, the name
+      // lookup is only a fallback, so a name that differs between the
+      // account and the profile can no longer break submitting.
       const subCriterionText = state.furtherLevel2 || state.furtherLevel1 || state.subPointTitle;
-      const subCriterionId = lookup.subCriterionIdByText ? lookup.subCriterionIdByText[subCriterionText] : undefined;
+      const resolveIds = () => {
+        const lookup = window.FAEMS_LOOKUP || {};
+        const me = window.FAEMS_CURRENT_USER || {};
+        return {
+          facultyId: me.faculty_profile_id || (lookup.facultyIdByName || {})[state.facultyName],
+          cycleId: (lookup.cycleIdByLabel || {})[state.year],
+          subCriterionId: (lookup.subCriterionIdByText || {})[subCriterionText],
+        };
+      };
+      let ids = resolveIds();
+      if (!ids.facultyId || !ids.cycleId || !ids.subCriterionId) {
+        await buildRealSubmissionConfig();
+        ids = resolveIds();
+      }
+      const { facultyId, cycleId, subCriterionId } = ids;
 
       if (!facultyId || !cycleId || !subCriterionId) {
-        await showAppAlert('Live criteria/department data could not be loaded from the server, so this cannot be submitted right now. Please refresh the page and try again once the backend is reachable.');
+        const missing = [
+          !facultyId && 'your faculty profile',
+          !cycleId && `the assessment year "${state.year}"`,
+          !subCriterionId && `the criterion "${subCriterionText}"`,
+        ].filter(Boolean).join(', ');
+        console.error('Submission lookup failed', { ids, state });
+        await showAppAlert(`Could not find ${missing} on the server, so this cannot be submitted right now. Please refresh the page and try again. If it keeps happening, tell the administrator which item is named in this message.`);
         return;
       }
 
@@ -4951,7 +4905,7 @@ function initAchievementSubmissionForm() {
         year: state.year,
         furtherDetails: furtherDetail,
         files: state.files.map(f => f.name),
-        status: 'Submitted — Pending HOD Review',
+        status: 'Submitted',
       };
 
       const originalBtnText = submitBtn.textContent;
@@ -4969,7 +4923,7 @@ function initAchievementSubmissionForm() {
           description: furtherDetail,
         });
         // Each file upload triggers server-side OCR, so with several
-        // attachments this can take a real, noticeable amount of time —
+        // attachments this can take a real, noticeable amount of time , 
         // showing which file is currently uploading (instead of a static
         // "Submitting…" the whole way through) is what tells the person
         // it's still working rather than frozen.
@@ -4992,28 +4946,23 @@ function initAchievementSubmissionForm() {
       submitBtn.disabled = false;
       submitBtn.textContent = originalBtnText;
       record.refId = achievement.evidence_id;
-      // HOD submitting their own achievement auto-verifies on submit (no
-      // review step exists for it — see AchievementViewSet.submit) — the
-      // success modal has to reflect whatever the server actually did,
-      // not always claim it was queued for review.
-      const isAutoVerified = submittedAchievement && submittedAchievement.status === 'verified';
-      record.status = isAutoVerified ? 'Verified' : 'Not Verified';
+      record.status = 'Submitted';
       const successModalTitle = document.getElementById('successModalTitle');
       const successModalSubtitle = document.getElementById('successModalSubtitle');
-      if (successModalTitle) successModalTitle.textContent = isAutoVerified ? 'Record Verified' : 'Record Submitted for Review';
+      if (successModalTitle) successModalTitle.textContent = 'Record Submitted';
       if (successModalSubtitle) {
-        successModalSubtitle.textContent = 'Your achievement record has been cryptographically logged.';
+        successModalSubtitle.textContent = '';
       }
 
       // Clear the form the instant the submission actually succeeds, not
-      // only when the success modal's "Done" button is clicked — leaving
+      // only when the success modal's "Done" button is clicked, leaving
       // the same attached files and selections sitting there (e.g. if
       // someone dismisses the modal with × instead) made it possible to
       // accidentally hit "Submit for Review" again and create a real
       // duplicate submission.
       resetForm();
       // The leaderboard and directory only ever refetch on their own page
-      // load or from dossier actions — a fresh submission from this wizard
+      // load or from dossier actions, a fresh submission from this wizard
       // never told them anything changed, so the new record's counts sat
       // stale until a full reload.
       document.dispatchEvent(new CustomEvent('faems:achievementsChanged'));
@@ -5090,7 +5039,7 @@ function initAchievementSubmissionForm() {
   updateTrack(35);
 
   // The faculty roster is only fetched once the visitor is authenticated
-  // (it's personal data — see buildRealSubmissionConfig), so re-fetch and
+  // (it's personal data, see buildRealSubmissionConfig), so re-fetch and
   // re-render the faculty dropdown right after a successful login.
   document.addEventListener('faems:authenticated', async () => {
     const refreshed = await buildRealSubmissionConfig();
@@ -5101,7 +5050,7 @@ function initAchievementSubmissionForm() {
   });
 
   // The Faculty Name field here is a locked display of the signed-in user
-  // (see populateFaculties above) — if they just renamed themselves via
+  // (see populateFaculties above), if they just renamed themselves via
   // "Update Details", window.FAEMS_CURRENT_USER.full_name is already fresh
   // by the time this fires, so just re-render the field from it.
   document.addEventListener('faems:facultyProfileUpdated', () => populateFaculties());

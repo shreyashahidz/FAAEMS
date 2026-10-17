@@ -18,11 +18,9 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.password_validation import validate_password
 
 from apps.accounts.captcha import generate_captcha, verify_captcha
-from apps.accounts.mfa import generate_secret, provisioning_qr_data_uri, verify_totp
 from apps.accounts.models import (
     Department,
     FacultyProfile,
-    FacultyRegistrationRequest,
     User,
     currently_active_faculty_q,
     designation_rank_case,
@@ -30,21 +28,19 @@ from apps.accounts.models import (
 )
 from apps.accounts.password_reset import generate_reset_challenge, verify_reset_challenge
 from apps.accounts.permissions import IsIQACAdminOrAbove, IsSuperAdmin, can_manage_department_faculty
-from apps.accounts.validators import role_for_designation
+from apps.accounts.validators import find_user_by_any_domain, role_for_designation
 from apps.accounts.serializers import (
     DepartmentSerializer,
     FacultyCreateSerializer,
     FacultyProfileSerializer,
-    FacultyRegistrationRequestSerializer,
     FacultyUpdateSerializer,
     MeSerializer,
     RegisterSerializer,
     TransferHODSerializer,
 )
-from apps.accounts.tokens import MFAPendingToken
 from apps.common.throttles import LoginRateThrottle, RegisterRateThrottle
 from apps.audit.models import SecurityAuditLog
-from apps.notifications.services import notify_faculty_registration_pending
+from apps.notifications.services import notify_missing_attachments_on_login
 
 logger = logging.getLogger("faems")
 
@@ -99,59 +95,6 @@ def _try_hard_delete_faculty(profile) -> bool:
         return False
 
 
-def _create_account_from_request(reg_request):
-    """Promotes an approved FacultyRegistrationRequest to a real User +
-    FacultyProfile — the same fields RegisterSerializer.create() sets,
-    minus re-hashing the password (already hashed when the request was
-    submitted). Re-checks uniqueness defensively: someone else could have
-    registered this exact email/employee_id in the window since the
-    request was first submitted."""
-    data = reg_request.payload
-    if User.objects.filter(email__iexact=data["email"]).exists():
-        raise ValidationError({"detail": "An account with this email already exists."})
-    if FacultyProfile.objects.filter(employee_id=data["employee_id"]).exists():
-        raise ValidationError({"detail": "This employee ID is already in use."})
-
-    with transaction.atomic():
-        designation = data.get("designation") or FacultyProfile.Designation.ASSISTANT_PROFESSOR
-        user = User(
-            email=data["email"],
-            full_name=data["full_name"],
-            role=role_for_designation(designation),
-            department=reg_request.department,
-        )
-        user.password = reg_request.password_hash
-        user.save()
-        profile = FacultyProfile.objects.create(
-            user=user,
-            department=reg_request.department,
-            full_name=data["full_name"],
-            designation=designation,
-            gender=data.get("gender", ""),
-            employee_id=data["employee_id"],
-            contact_number=data.get("contact_number", ""),
-            join_date=date.fromisoformat(data["join_date"]) if data.get("join_date") else None,
-            date_of_birth=date.fromisoformat(data["date_of_birth"]) if data.get("date_of_birth") else None,
-        )
-    return profile
-
-
-def _clear_registration_notifications(reg_request):
-    """Approve/reject resolves this request for every HOD/admin who was
-    notified about it, not just whoever clicked the button — otherwise
-    anyone who acted from the Approve Faculty page (rather than the
-    notification card itself) leaves a stale "awaiting your approval"
-    notice sitting unread in the bell for a request that's already
-    decided."""
-    from apps.notifications.models import Notification
-
-    Notification.objects.filter(
-        notification_type=Notification.NotificationType.FACULTY_REGISTRATION_PENDING,
-        related_evidence_id=f"regreq-{reg_request.id}",
-        is_read=False,
-    ).update(is_read=True)
-
-
 class CaptchaView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -160,17 +103,12 @@ class CaptchaView(APIView):
 
 
 class RegisterView(APIView):
-    """Public self-registration: the form is fully validated (institutional
-    email, password strength, uniqueness, age, HOD-slot availability, ...)
-    exactly as before, but no account is created yet — a
-    FacultyRegistrationRequest is created instead and the department's HOD
-    (or IQAC/Super Admin, for an HOD-designation request) is notified.
-    Only once they approve it (FacultyRegistrationApprovalViewSet.approve)
-    does the real account get created and become able to log in.
-
-    The plaintext password never touches the database — it's hashed here
-    with make_password() and only the hash is stored on the request row,
-    the same way User.set_password() would do it internally."""
+    """Public self-registration (LAN deployment): no approval step. A faculty
+    member fills in the form and the account is created immediately, with
+    whatever designation they chose; they can log in straight away. The
+    one-HOD-per-department rule is enforced by RegisterSerializer
+    (validate_hod_slot_available), so an HOD designation is refused while
+    the department already has an active HOD."""
 
     permission_classes = [permissions.AllowAny]
     throttle_classes = [RegisterRateThrottle]
@@ -178,77 +116,14 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = dict(serializer.validated_data)
-        email = data["email"].lower()
-
-        if FacultyRegistrationRequest.objects.filter(
-            email__iexact=email, status=FacultyRegistrationRequest.Status.PENDING
-        ).exists():
-            raise ValidationError({"detail": "A registration request for this email is already awaiting approval."})
-
-        password_hash = make_password(data.pop("password"))
-        # DateField values aren't JSON-serializable as-is.
-        if data.get("join_date"):
-            data["join_date"] = data["join_date"].isoformat()
-        if data.get("date_of_birth"):
-            data["date_of_birth"] = data["date_of_birth"].isoformat()
-
-        department = Department.objects.get(code="AIML")
-        reg_request = FacultyRegistrationRequest.objects.create(
-            email=email, payload=data, password_hash=password_hash, department=department,
-        )
-        _log_security_event(request, SecurityAuditLog.EventType.REGISTRATION_REQUESTED, email_attempted=email)
-        notify_faculty_registration_pending(reg_request)
-        return Response({
-            "detail": "Your request has been shared with the HOD. Your account will be created once it's approved — "
-                       "you'll be able to log in after that.",
-            "email": email,
-        })
-
-
-class FacultyRegistrationApprovalViewSet(viewsets.ReadOnlyModelViewSet):
-    """The HOD's "Approve Faculty" page — every self-registration for her
-    department sits here, PENDING, until she acts on it. IQAC/Super Admin
-    see every department's requests (same override pattern as
-    FacultyProfileViewSet elsewhere); an ordinary HOD only ever sees her
-    own department's."""
-
-    serializer_class = FacultyRegistrationRequestSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        qs = FacultyRegistrationRequest.objects.filter(status=FacultyRegistrationRequest.Status.PENDING)
-        if user.role in {User.Role.IQAC_ADMIN, User.Role.SUPER_ADMIN}:
-            return qs
-        if user.role == User.Role.HOD:
-            return qs.filter(department_id=user.department_id)
-        raise PermissionDenied("Only an HOD or IQAC/Super Admin can review registration requests.")
-
-    @action(detail=True, methods=["post"])
-    def approve(self, request, pk=None):
-        reg_request = self.get_object()
-        profile = _create_account_from_request(reg_request)
-        reg_request.status = FacultyRegistrationRequest.Status.APPROVED
-        reg_request.reviewed_by = request.user
-        reg_request.reviewed_at = timezone.now()
-        reg_request.save(update_fields=["status", "reviewed_by", "reviewed_at"])
-        _clear_registration_notifications(reg_request)
+        profile = serializer.save()
         _log_security_event(
             request, SecurityAuditLog.EventType.ACCOUNT_REGISTERED, user=profile.user, email_attempted=profile.user.email,
         )
-        return Response(FacultyProfileSerializer(profile).data, status=201)
-
-    @action(detail=True, methods=["post"])
-    def reject(self, request, pk=None):
-        reg_request = self.get_object()
-        reg_request.status = FacultyRegistrationRequest.Status.REJECTED
-        reg_request.reviewed_by = request.user
-        reg_request.reviewed_at = timezone.now()
-        reg_request.save(update_fields=["status", "reviewed_by", "reviewed_at"])
-        _clear_registration_notifications(reg_request)
-        _log_security_event(request, SecurityAuditLog.EventType.REGISTRATION_REJECTED, email_attempted=reg_request.email)
-        return Response(status=204)
+        return Response(
+            {"detail": "Your account has been created. You can log in now.", "email": profile.user.email},
+            status=201,
+        )
 
 
 class PasswordResetRequestView(APIView):
@@ -286,7 +161,7 @@ class PasswordResetRequestView(APIView):
             _log_security_event(request, SecurityAuditLog.EventType.PASSWORD_RESET_REQUESTED, user=user, email_attempted=email)
         except User.DoesNotExist:
             raise ValidationError({"detail": "That email and date of birth don't match our records."})
-        return Response({"detail": "Verified — you may now set a new password.", "reset_token": token})
+        return Response({"detail": "Verified. You may now set a new password.", "reset_token": token})
 
 
 class PasswordResetConfirmView(APIView):
@@ -350,9 +225,10 @@ class LoginView(APIView):
         if not verify_captcha(captcha_token, captcha_answer):
             return Response({"detail": "Captcha verification failed. Please try again."}, status=400)
 
-        try:
-            user = User.objects.get(email__iexact=email, is_deleted=False)
-        except User.DoesNotExist:
+        # Everyone has an address on both institutional domains, so either one
+        # signs in to the same account.
+        user = find_user_by_any_domain(email)
+        if user is None:
             _log_security_event(request, SecurityAuditLog.EventType.LOGIN_FAILED, email_attempted=email, reason="no_such_user")
             return Response({"detail": "Invalid email or password."}, status=401)
 
@@ -394,78 +270,8 @@ class LoginView(APIView):
             _log_security_event(request, SecurityAuditLog.EventType.LOGIN_FAILED, user=user, email_attempted=email, reason="exited")
             return Response({"detail": "Invalid email or password."}, status=401)
 
-        if user.requires_mfa:
-            mfa_token = str(MFAPendingToken.for_user(user))
-            if not user.mfa_enabled:
-                return Response(
-                    {
-                        "mfa_setup_required": True,
-                        "mfa_token": mfa_token,
-                    }
-                )
-            return Response({"mfa_required": True, "mfa_token": mfa_token})
-
         _log_security_event(request, SecurityAuditLog.EventType.LOGIN_SUCCESS, user=user, email_attempted=email)
-        return Response({**_issue_tokens(user), "user": MeSerializer(user).data})
-
-
-def _user_from_mfa_token(token_str):
-    try:
-        token = MFAPendingToken(token_str)
-    except TokenError as exc:
-        raise ValidationError({"mfa_token": "This MFA session has expired or is invalid. Please log in again."}) from exc
-    user_id = token["user_id"]
-    try:
-        return User.objects.get(id=user_id, is_deleted=False)
-    except User.DoesNotExist as exc:
-        raise ValidationError({"mfa_token": "Account not found."}) from exc
-
-
-class MFASetupView(APIView):
-    """Issues a TOTP secret + QR code for a user who hasn't enabled MFA
-    yet. Not activated until confirmed via MFAVerifyView.
-
-    Reuses the existing not-yet-confirmed secret if one is already pending,
-    instead of generating a new one on every call — otherwise a second
-    login attempt (e.g. after a typo, or just reopening the login modal)
-    silently invalidates whatever QR code the person already scanned into
-    their authenticator app, and every future code from that app fails
-    forever with no obvious reason why.
-    """
-
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        user = _user_from_mfa_token(request.data.get("mfa_token", ""))
-        if user.mfa_enabled:
-            return Response({"detail": "MFA is already enabled for this account."}, status=400)
-        if not user.mfa_secret:
-            user.mfa_secret = generate_secret()
-            user.save(update_fields=["mfa_secret"])
-        return Response({"secret": user.mfa_secret, "qr_code": provisioning_qr_data_uri(user, user.mfa_secret)})
-
-
-class MFAVerifyView(APIView):
-    """Step 2 of login: confirms the TOTP code. On a user's first
-    successful code, this also flips mfa_enabled on (completing setup)."""
-
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request):
-        user = _user_from_mfa_token(request.data.get("mfa_token", ""))
-        code = str(request.data.get("code", "")).strip()
-
-        if not verify_totp(user.mfa_secret, code):
-            _log_security_event(request, SecurityAuditLog.EventType.MFA_CHALLENGE_FAILED, user=user, email_attempted=user.email)
-            return Response({"detail": "Incorrect authentication code."}, status=400)
-
-        first_time = not user.mfa_enabled
-        if first_time:
-            user.mfa_enabled = True
-            user.save(update_fields=["mfa_enabled"])
-            _log_security_event(request, SecurityAuditLog.EventType.MFA_ENABLED, user=user, email_attempted=user.email)
-
-        _log_security_event(request, SecurityAuditLog.EventType.LOGIN_SUCCESS, user=user, email_attempted=user.email, via_mfa=True)
+        notify_missing_attachments_on_login(user)
         return Response({**_issue_tokens(user), "user": MeSerializer(user).data})
 
 
@@ -662,7 +468,7 @@ class FacultyProfileViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         self._assert_can_manage(instance.department)
         if instance.is_currently_active:
-            raise ValidationError({"detail": "This faculty member is currently active — remove them from the active roster first."})
+            raise ValidationError({"detail": "This faculty member is currently active. Remove them from the active roster first."})
         from apps.achievements.models import Achievement, EvidenceDocument
 
         purged_email = instance.user.email
@@ -846,54 +652,76 @@ class FacultyProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"], url_path="leaderboard")
     def leaderboard(self, request):
-        """Institution-wide contribution ranking — verified-achievement
-        counts per active faculty member. Aggregate counts only (names,
-        designation, department, counts); never the underlying achievement
-        details, which stay behind the normal per-record RBAC."""
-        from django.db.models import Count, Q
+        """Institution-wide contribution ranking. With HOD verification gone,
+        a faculty member's score is the number of Criterion 6 criteria
+        (the marks-bearing sub-points: 6.1.1, 6.1.2.1, 6.1.2.2, ... 6.2.6)
+        they have filled for the chosen academic year — a criterion counts
+        once, however many records or sub-options sit under it, and only
+        when at least one record under it has an attachment. Aggregate
+        counts only (names, designation, department, counts); never the
+        underlying achievement details, which stay behind the normal
+        per-record RBAC."""
+        from django.db.models import Count, Exists, OuterRef, Q
 
-        from apps.achievements.models import Achievement
+        from apps.achievements.models import Achievement, EvidenceDocument, EvidenceMapping
+        from apps.achievements.nba_report import _leaf_descendant_ids
+        from apps.criteria.models import Cycle, SubCriterion
 
-        # Tiebreak below the real counts: when nobody's actually ahead on
-        # verified/submitted work (e.g. a freshly onboarded department
-        # where everyone's still at zero), rank by institutional role
-        # rather than alphabetically by name — HOD first, then descending
-        # seniority — so the ranking reads as a sane default order instead
-        # of looking arbitrary. Within the same seniority tier, whoever is
-        # R&D Coordinator sorts first (rd_coordinator_rank_case) — same
-        # rule the Faculty Directory below uses.
+        # Academic year runs June-May and is derived from today's date, so the
+        # board (and its year dropdown) rolls over by itself on 1 June.
+        from apps.criteria.academic_year import academic_year_label, ensure_current_cycle, ordered_year_labels
+
+        ensure_current_cycle()
+        today = timezone.localdate()
+        current_label = academic_year_label(today)
+        year_labels = ordered_year_labels(Cycle.objects.filter(framework__code="NBA").values_list("label", flat=True), today)
+        requested = request.query_params.get("year") or current_label
+        year_filter = None if requested == "all" else requested
+
+        nodes = list(SubCriterion.objects.filter(criterion__code="6", criterion__framework__code="NBA", max_marks__gt=0))
+        leaf_to_node = {}
+        for node in nodes:
+            for leaf_id in _leaf_descendant_ids(node):
+                leaf_to_node[leaf_id] = node.id
+
         designation_rank = designation_rank_case()
-
-        qs = (
+        profiles = list(
             FacultyProfile.objects.filter(currently_active_faculty_q())
             .exclude(user__email__istartswith="guest.")
             .select_related("department")
-            .annotate(
-                # Count(..., filter=...) across a reverse FK compiles straight
-                # to a SQL JOIN — it never goes through Achievement.objects'
-                # SoftDeleteManager, so without an explicit is_deleted=False
-                # here, every soft-deleted achievement (drafts discarded,
-                # attachments' parent submissions removed, anything a
-                # faculty member has since deleted) kept silently counting
-                # toward these totals forever. This was the actual reason
-                # "deleting doesn't update the leaderboard" kept recurring.
-                verified_count=Count(
-                    "achievements",
-                    filter=Q(achievements__status__in=[Achievement.Status.VERIFIED, Achievement.Status.IQAC_LOCKED])
-                    & Q(achievements__is_deleted=False),
-                    distinct=True,
-                ),
-                submitted_count=Count(
-                    "achievements",
-                    filter=~Q(achievements__status=Achievement.Status.DRAFT) & Q(achievements__is_deleted=False),
-                    distinct=True,
-                ),
-                designation_rank=designation_rank,
-                rd_coordinator_rank=rd_coordinator_rank_case(),
-            )
-            .order_by("-verified_count", "-submitted_count", "designation_rank", "rd_coordinator_rank", "full_name")
+            .annotate(designation_rank=designation_rank, rd_coordinator_rank=rd_coordinator_rank_case())
+            .order_by("designation_rank", "rd_coordinator_rank", "full_name")
         )
 
+        # Count(..., filter=...) across a reverse FK never goes through
+        # Achievement.objects' SoftDeleteManager, hence the explicit
+        # is_deleted=False below (and on the mapping query).
+        has_document = EvidenceDocument.objects.filter(achievement=OuterRef("achievement_id"))
+        mappings = (
+            EvidenceMapping.objects.filter(
+                achievement__is_deleted=False,
+                achievement__faculty__in=[p.id for p in profiles],
+            )
+            .exclude(achievement__status=Achievement.Status.DRAFT)
+            .annotate(has_doc=Exists(has_document))
+            .filter(has_doc=True)
+        )
+        if year_filter:
+            mappings = mappings.filter(achievement__cycle__label=year_filter)
+        filled = {}
+        for faculty_id, leaf_id in mappings.values_list("achievement__faculty_id", "sub_criterion_id").distinct():
+            node_id = leaf_to_node.get(leaf_id)
+            if node_id:
+                filled.setdefault(faculty_id, set()).add(node_id)
+
+        submitted_qs = Achievement.objects.exclude(status=Achievement.Status.DRAFT)
+        if year_filter:
+            submitted_qs = submitted_qs.filter(cycle__label=year_filter)
+        submitted = dict(
+            submitted_qs.values_list("faculty_id").annotate(n=Count("id")).values_list("faculty_id", "n")
+        )
+
+        total = len(nodes)
         results = [
             {
                 "id": f.id,
@@ -901,12 +729,16 @@ class FacultyProfileViewSet(viewsets.ModelViewSet):
                 "designation": f.get_designation_display(),
                 "department_code": f.department.code,
                 "department_name": f.department.name,
-                "verified_count": f.verified_count,
-                "submitted_count": f.submitted_count,
+                "criteria_filled": len(filled.get(f.id, ())),
+                "criteria_total": total,
+                "submitted_count": submitted.get(f.id, 0),
             }
-            for f in qs
+            for f in profiles
         ]
-        return Response({"results": results})
+        # profiles is already in the institutional tiebreak order and sort()
+        # is stable, so equal scores keep HOD-first / seniority ordering.
+        results.sort(key=lambda r: (-r["criteria_filled"], -r["submitted_count"]))
+        return Response({"results": results, "years": year_labels, "year": requested, "current_year": current_label})
 
     @action(detail=False, methods=["get"], url_path="directory")
     def directory(self, request):
@@ -975,7 +807,9 @@ class FacultyProfileViewSet(viewsets.ModelViewSet):
             raise ValidationError({"year": "Not an available report year."})
 
         buffer = generate_monthly_nba_report(profile.department, month, year)
-        filename = f"NBA-Criterion6-{profile.department.code}-{year}-{month:02d}.pdf"
+        import calendar
+
+        filename = f"Faculty_Contribution_Report_{calendar.month_name[month]}_{year}.pdf"
         from django.http import FileResponse
 
         response = FileResponse(buffer, content_type="application/pdf", filename=filename, as_attachment=True)

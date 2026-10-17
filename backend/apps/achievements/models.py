@@ -73,7 +73,7 @@ class Achievement(SoftDeleteModel, TimeStampedModel):
         ]
 
     def __str__(self):
-        return f"{self.evidence_id} — {self.title}"
+        return f"{self.evidence_id}: {self.title}"
 
     def save(self, *args, **kwargs):
         if not self.evidence_id:

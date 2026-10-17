@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FAEMS API client — plain fetch, no build step. Loaded before app.js and
+   FAEMS API client, plain fetch, no build step. Loaded before app.js and
    exposes window.FaemsAPI. Talks to the same Django/DRF backend the React
    admin app uses (Postgres-backed, MinIO for files, JWT auth).
    ========================================================================== */
@@ -10,7 +10,7 @@
   // sessionStorage, not localStorage: localStorage is shared across every
   // tab of this origin, so logging into a second account in one tab
   // silently swaps the session for every other open tab too (e.g. testing
-  // as HOD in one tab and faculty in another — the second login clobbers
+  // as HOD in one tab and faculty in another, the second login clobbers
   // the first tab's auth without it reloading, which looks like a broken
   // permission check when it's really two tabs fighting over one shared
   // token). sessionStorage is per-tab, so each tab keeps its own login.
@@ -37,7 +37,7 @@
   // refresh reuses an already-blacklisted token and fails; (2) several
   // requests can 401 at once (e.g. the parallel Promise.all in
   // buildRealSubmissionConfig on page load) and each would otherwise fire
-  // its own refresh — only the first can win against the one-time-use
+  // its own refresh, only the first can win against the one-time-use
   // refresh token, so concurrent callers share one in-flight promise
   // instead of racing.
   let refreshInFlight = null;
@@ -66,7 +66,7 @@
   }
 
   // DRF validation errors normally come back as {"field_name": ["message",
-  // ...], ...} rather than {"detail": "message"} — falling back to
+  // ...], ...} rather than {"detail": "message"}, falling back to
   // JSON.stringify(data) for anything without a `detail` key meant a form
   // error like {"new_password": ["too common"]} showed up as the literal
   // raw JSON (braces, quotes, "correlation_id" and all) in the UI instead
@@ -139,29 +139,14 @@
     });
   }
 
-  // Self-registration: the form is fully validated server-side and held as
-  // a pending request — no account exists yet. The department's HOD (or
-  // IQAC/Super Admin) approves or rejects it from the Approve Faculty page;
-  // only on approval does the account actually get created.
+  // Self-registration: validated server-side, and the account is created
+  // immediately (no approval step), the person can log in right away.
   function registerFaculty(payload) {
     return request("/auth/register/", { method: "POST", body: payload });
   }
 
-  // The HOD's "Approve Faculty" page — her own department's pending
-  // registrations (or every department's, for IQAC/Super Admin).
-  function listPendingFacultyApprovals() {
-    return request("/faculty-registration-requests/");
-  }
 
-  function approveFacultyRegistration(requestId) {
-    return request(`/faculty-registration-requests/${requestId}/approve/`, { method: "POST" });
-  }
-
-  function rejectFacultyRegistration(requestId) {
-    return request(`/faculty-registration-requests/${requestId}/reject/`, { method: "POST" });
-  }
-
-  // Binary PDF response — the shared request() helper always reads the
+  // Binary PDF response, the shared request() helper always reads the
   // body as text/JSON, which would corrupt a PDF's bytes, so this fetches
   // and returns a Blob directly instead. Not retried on 401 (one-off
   // button click, not worth the refresh-token dance for this). month/year
@@ -182,20 +167,24 @@
       err.status = res.status;
       throw err;
     }
-    const disposition = res.headers.get("Content-Disposition") || "";
-    const match = disposition.match(/filename="?([^"]+)"?/);
-    const filename = match ? match[1] : "NBA-Criterion6-Report.pdf";
+    // Built here from the month/year rather than read from the response
+    // header: the browser hides Content-Disposition from scripts on this
+    // cross-origin call, which used to leave the generic fallback name.
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const filename = month && year
+      ? `Faculty_Contribution_Report_${monthNames[Number(month) - 1]}_${year}.pdf`
+      : "Faculty_Contribution_Report.pdf";
     const blob = await res.blob();
     return { blob, filename };
   }
 
-  // The report modal's Year dropdown options — see
+  // The report modal's Year dropdown options, see
   // available_report_years' docstring for why this list auto-extends.
   function getNbaReportYears() {
     return request("/faculty/nba-report-years/");
   }
 
-  // Forgot password, step 1: email + date of birth on file — matching DOB
+  // Forgot password, step 1: email + date of birth on file, matching DOB
   // is the identity check (no email/OTP involved).
   function requestPasswordReset(email, dateOfBirth) {
     return request("/auth/password-reset/request/", { method: "POST", body: { email, date_of_birth: dateOfBirth } });
@@ -263,17 +252,17 @@
     return request("/faculty/", { method: "POST", body: payload });
   }
 
-  // "Update Details" — a faculty member editing their own profile. The
+  // "Update Details", a faculty member editing their own profile. The
   // backend allows this for the profile's own owner regardless of role;
   // email is never part of this payload (it can't be changed here).
   function updateMyProfile(facultyProfileId, payload) {
     return request(`/faculty/${facultyProfileId}/`, { method: "PATCH", body: payload });
   }
 
-  // "Transfer your role to the next HOD" — only the current HOD acting on
+  // "Transfer your role to the next HOD", only the current HOD acting on
   // her own profile can call this. Her own demotion (new_designation) and
   // the successor's account creation happen together, atomically, on the
-  // backend — see FacultyProfileViewSet.transfer_hod.
+  // backend, see FacultyProfileViewSet.transfer_hod.
   function transferHOD(newDesignation, successor) {
     return request("/faculty/transfer-hod/", {
       method: "POST",
@@ -282,7 +271,7 @@
   }
 
   // Same transfer, but the incoming HOD is an existing faculty member in
-  // the department — no new account, just her designation/role promoted.
+  // the department, no new account, just her designation/role promoted.
   function transferHODToExisting(newDesignation, successorFacultyId) {
     return request("/faculty/transfer-hod/", {
       method: "POST",
@@ -294,7 +283,7 @@
     });
   }
 
-  // "Delete Account" — a future last working date only schedules it
+  // "Delete Account", a future last working date only schedules it
   // (everything stays normal until then, including login); today/a past
   // date applies right away. See FacultyProfileViewSet.delete_my_account
   // on the backend for the full behavior.
@@ -306,7 +295,7 @@
   }
 
   // HOD (own department) or IQAC/Super Admin marking someone who has
-  // actually left — one step, from that faculty member's own dossier.
+  // actually left, one step, from that faculty member's own dossier.
   // Disables their login and drops them from the leaderboard/directory
   // (both already filter to active faculty only).
   function deactivateFaculty(facultyProfileId, exitDate, reason) {
@@ -316,7 +305,7 @@
     });
   }
 
-  // HOD-only "Delete Data" on a Non-active faculty card — permanently
+  // HOD-only "Delete Data" on a Non-active faculty card, permanently
   // removes the account AND every achievement/evidence record, even with
   // real history. Only works on someone already non-active. See
   // FacultyProfileViewSet.purge on the backend.
@@ -325,11 +314,11 @@
   }
 
   // Institution-wide contribution ranking (verified-achievement counts).
-  function getLeaderboard() {
-    return request("/faculty/leaderboard/");
+  function getLeaderboard(year) {
+    return request("/faculty/leaderboard/" + (year ? `?year=${encodeURIComponent(year)}` : ""));
   }
 
-  // The public faculty directory (name, title, bio) — every active
+  // The public faculty directory (name, title, bio), every active
   // faculty member, visible to any signed-in user regardless of role.
   // Deliberately not the same as listFaculty(), which is RBAC-scoped
   // (self-only for plain faculty) for the roster-management use case.
@@ -342,7 +331,7 @@
     return request("/cycles/");
   }
 
-  // The submission wizard's "+ Add Year" option — server computes and
+  // The submission wizard's "+ Add Year" option, server computes and
   // creates exactly the next single academic year after whatever's
   // currently latest (e.g. 2026-2027 -> 2027-2028); open to any
   // authenticated faculty member, not just IQAC/admin.
@@ -350,7 +339,7 @@
     return request("/cycles/add-next/", { method: "POST" });
   }
 
-  // The "Delete Year" counterpart — only succeeds for a year the calling
+  // The "Delete Year" counterpart, only succeeds for a year the calling
   // faculty added themselves (server-enforced); cascades to soft-delete
   // that faculty's own achievements/attachments under it, never anyone
   // else's data or the year itself for other faculty.
@@ -371,7 +360,7 @@
   }
 
   // A faculty member's achievements (each with its nested evidence
-  // documents) — backs the dossier's Criterion 6.1/6.2 and Evidence Vault
+  // documents), backs the dossier's Criterion 6.1/6.2 and Evidence Vault
   // tabs. The backend scopes the result by the caller's own role regardless
   // of the faculty id passed: a plain faculty member only ever gets their
   // own record back, an HOD gets any faculty in their own department (for
@@ -382,13 +371,6 @@
 
   function deleteAchievement(id) {
     return request(`/achievements/${id}/`, { method: "DELETE" });
-  }
-
-  // HOD (own department only) or IQAC/Super Admin — verifying an
-  // achievement here triggers the same real notification to the submitting
-  // faculty that the rest of the review workflow already sends.
-  function approveAchievement(id) {
-    return request(`/achievements/${id}/review/approve/`, { method: "POST" });
   }
 
   function deleteEvidence(id) {
@@ -409,7 +391,7 @@
   // Faculty get notified when their submission needs corrections or is
   // verified; the reviewing HOD (or IQAC, if the submitter is the HOD)
   // gets notified when something new needs their review. The bell
-  // dropdown only ever shows unread ones — once marked read, a
+  // dropdown only ever shows unread ones, once marked read, a
   // notification is done its job and shouldn't keep cluttering the list.
   function listNotifications() {
     return request("/notifications/?is_read=false");
@@ -439,9 +421,6 @@
     completeLogin,
     logout,
     registerFaculty,
-    listPendingFacultyApprovals,
-    approveFacultyRegistration,
-    rejectFacultyRegistration,
     downloadNbaReport,
     getNbaReportYears,
     requestPasswordReset,
@@ -467,7 +446,6 @@
     createAchievement,
     listAchievements,
     deleteAchievement,
-    approveAchievement,
     deleteEvidence,
     uploadEvidence,
     submitForReview,
